@@ -1,0 +1,1 @@
+PLATFORMS = ["media_player"]
