@@ -6,6 +6,13 @@
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
 ![visit](https://visitor-badge.laobi.icu/badge?page_id=shaonianzhentan.ha_cloud_music&left_text=visit)
 
+
+---
+## 历史旧版本项目，请点击链接访问安装
+https://github.com/shaonianzhentan/cloud_music
+
+---
+
 ## 安装
 
 安装完成重启HA，刷新一下页面，在集成里搜索`云音乐`
