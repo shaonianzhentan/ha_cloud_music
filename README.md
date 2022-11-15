@@ -19,6 +19,13 @@ https://github.com/shaonianzhentan/cloud_music
 
 [![Add Integration](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start?domain=ha_cloud_music)
 
+> 接口说明
+
+接口服务是开源免费的，但需要自己进行部署，然后持续进行更新升级，如果遇到接口相关的问题，请去`NeteaseCloudMusicApi`项目中查找问题
+
+https://github.com/Binaryify/NeteaseCloudMusicApi
+
+不想动手不想操心，也可以付费使用由我部署维护的接口服务（每年30）
 
 ## 使用
 
@@ -49,6 +56,12 @@ customize.yaml
 media_player.yun_yin_le:
   media_player: media_player.源实体
 ```
+
+## 关联项目
+
+- https://github.com/shaonianzhentan/cloud_music_mpd
+- https://github.com/shaonianzhentan/ha_music_source
+- https://github.com/shaonianzhentan/ha_windows
 
 ## 如果这个项目对你有帮助，请我喝杯<del style="font-size: 14px;">咖啡</del>奶茶吧😘
 |支付宝|微信|
