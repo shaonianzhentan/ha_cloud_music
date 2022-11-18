@@ -62,6 +62,6 @@ class HttpView(HomeAssistantView):
 
     async def async_music_source(self, hass, song, singer):
         # 使用全网音乐搜索
-        ha_music_source = hass.data['ha_music_source']
+        ha_music_source = hass.data.get('ha_music_source')
         if ha_music_source is not None:
             return await ha_music_source.async_song_url(song, singer)
