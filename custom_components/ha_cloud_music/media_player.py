@@ -227,7 +227,7 @@ class CloudMusicMediaPlayer(MediaPlayerEntity):
         await self.cloud_music.async_media_previous_track(self, self._attr_shuffle)
 
     async def async_media_seek(self, position):
-        await self.async_call('media_seek', { 'position': position })
+        await self.async_call('media_seek', { 'seek_position': position })
 
     async def async_media_stop(self):
         await self.async_call('media_stop')
