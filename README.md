@@ -27,7 +27,7 @@ https://github.com/Binaryify/NeteaseCloudMusicApi
 
 不想动手不想操心，也可以付费使用由我部署维护的接口服务（每年30）
 
-## 使用
+## 使用 - [插件图片预览](https://github.com/shaonianzhentan/image/blob/main/ha_cloud_music/README.md)
 
 播放网易云音乐歌单 `cloudmusic://163/playlist?id=25724904`
 - cloudmusic://163/playlist?id=歌单ID
@@ -62,6 +62,8 @@ media_player.yun_yin_le:
 - https://github.com/shaonianzhentan/cloud_music_mpd
 - https://github.com/shaonianzhentan/ha_music_source
 - https://github.com/shaonianzhentan/ha_windows
+
+
 
 ## 如果这个项目对你有帮助，请我喝杯<del style="font-size: 14px;">咖啡</del>奶茶吧😘
 |支付宝|微信|
