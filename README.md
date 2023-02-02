@@ -54,7 +54,10 @@ homeassistant:
 customize.yaml
 ```yaml
 media_player.yun_yin_le:
-  media_player: media_player.源实体
+  media_player: 
+    - media_player.源实体1
+    - media_player.源实体2
+    - media_player.源实体3
 ```
 
 ## 关联项目

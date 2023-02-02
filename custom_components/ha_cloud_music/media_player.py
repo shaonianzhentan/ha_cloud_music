@@ -82,6 +82,7 @@ class CloudMusicMediaPlayer(MediaPlayerEntity):
 
         # default attribute
         self._attr_source_list = []
+        self._attr_sound_mode = None
         self._attr_sound_mode_list = []
         self._attr_name = manifest.name
         self._attr_unique_id = manifest.documentation
@@ -132,11 +133,8 @@ class CloudMusicMediaPlayer(MediaPlayerEntity):
 
     @property
     def media_player(self):
-        if self.entity_id is not None:
-            state = self.hass.states.get(self.entity_id)
-            entity_id = state.attributes.get('media_player')
-            if entity_id is not None and entity_id != self.entity_id and entity_id.startswith('media_player.'):
-                return self.hass.states.get(entity_id)
+        if self.entity_id is not None and self._attr_sound_mode is not None:
+            return self.hass.states.get(self._attr_sound_mode)
 
     @property
     def device_info(self):
@@ -161,9 +159,10 @@ class CloudMusicMediaPlayer(MediaPlayerEntity):
         if self._attr_source_list.count(source) > 0:
             self._attr_source = source
 
-    async def async_select_sound_mode(self, mode):
-        if self._attr_sound_mode_list.count(mode) > 0:
-            self._attr_sound_mode = mode
+    async def async_select_sound_mode(self, sound_mode):
+        if self._attr_sound_mode_list.count(sound_mode) > 0:
+            await self.async_media_pause()
+            self._attr_sound_mode = sound_mode
 
     async def async_volume_up(self):
         await self.async_call('volume_up')
@@ -234,7 +233,18 @@ class CloudMusicMediaPlayer(MediaPlayerEntity):
 
     # 更新属性
     async def async_update(self):
-        pass
+        if self.entity_id is not None:
+            state = self.hass.states.get(self.entity_id)
+            entities = state.attributes.get('media_player')
+            if entities is not None:
+                # 兼容初版
+                if isinstance(entities, str):
+                    entities = [ entities ]
+
+                if len(entities) > 0:
+                    self._attr_sound_mode_list = entities
+                    if self._attr_sound_mode is None:
+                        self._attr_sound_mode = entities[0]
 
     # 调用服务
     async def async_call(self, service, service_data={}):
