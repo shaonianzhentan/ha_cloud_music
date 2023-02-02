@@ -70,8 +70,7 @@ class OptionsFlowHandler(OptionsFlow):
 
         DATA_SCHEMA = vol.Schema({
             vol.Required(CONF_USERNAME, default=options.get(CONF_USERNAME)): str,
-            vol.Required(CONF_PASSWORD, default=options.get(CONF_PASSWORD)): str,
-            vol.Required("conversation", default=options.get("conversation", True)): bool
+            vol.Required(CONF_PASSWORD, default=options.get(CONF_PASSWORD)): str
         })
         return self.async_show_form(step_id="user", data_schema=DATA_SCHEMA, errors=errors)
         

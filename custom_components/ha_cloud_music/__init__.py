@@ -3,7 +3,6 @@ from homeassistant.core import HomeAssistant
 import homeassistant.helpers.config_validation as cv
 from homeassistant.const import CONF_URL
 
-from .intent_script import async_register
 from .const import PLATFORMS
 from .manifest import manifest
 from .http import HttpView
@@ -22,8 +21,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.http.register_view(HttpView)
     hass.config_entries.async_setup_platforms(entry, PLATFORMS)
     entry.async_on_unload(entry.add_update_listener(update_listener))
-
-    async_register(hass, entry.options.get('conversation', True))
     return True
 
 async def update_listener(hass, entry):
