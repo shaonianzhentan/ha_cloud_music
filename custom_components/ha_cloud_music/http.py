@@ -1,4 +1,4 @@
-import os, json
+import os, json, requests
 from urllib.parse import parse_qsl, quote
 from homeassistant.components.http import HomeAssistantView
 from aiohttp import web
@@ -65,3 +65,23 @@ class HttpView(HomeAssistantView):
         ha_music_source = hass.data.get('ha_music_source')
         if ha_music_source is not None:
             return await ha_music_source.async_song_url(song, singer)
+        else:
+            keyword = f'{song} - {singer}'
+            url = 'https://thewind.xyz/api/new/search'
+            files = {
+                "src": (None, "KW"),
+                "keyword": (None, keyword),
+                "num": (None, 10)
+            }
+            response = await hass.async_add_executor_job(requests.post, url, files=files)
+            result = response.json()
+            for item in result:
+                # print(item['songName'], item['singersName'], item['albumName'])
+                songSrc = item['songSrc']
+                songId = item['songId']
+                play_url = f'https://thewind.xyz/api/new/player?shareId={songSrc}_{songId}'
+                print(play_url)
+                response = await hass.async_add_executor_job(requests.get, url)
+                result = response.json()
+                if len(result) > 0:
+                    return result[0].get('url')
