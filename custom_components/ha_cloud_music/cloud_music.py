@@ -1,5 +1,5 @@
 from unittest import result
-import uuid, time, json, os, random, aiohttp
+import uuid, time, json, os, hashlib, aiohttp
 from urllib.parse import quote
 from homeassistant.helpers.network import get_url
 from .http_api import http_get, http_cookie
@@ -13,6 +13,9 @@ from .browse_media import (
     async_media_previous_track, 
     async_media_next_track
 )
+
+def md5(data):
+    return hashlib.md5(data.encode('utf-8')).hexdigest()
 
 class CloudMusic():
 
@@ -46,7 +49,7 @@ class CloudMusic():
         else:
             login_url = login_url + '/cellphone?phone='
 
-        data = await http_cookie(login_url + f'{quote(username)}&password={quote(password)}')
+        data = await http_cookie(login_url + f'{quote(username)}&password={quote(password)}&md5_password={md5(password)}')
         res_data = data.get('data', {})
         # 登录成功
         if res_data.get('code') == 200:

@@ -28,6 +28,8 @@
                 }
             }
         },
-        "error": {}
+        "error": {
+            "login_failed": "登录失败"
+        }
     }
 }
