@@ -50,7 +50,7 @@ class CloudMusic():
         else:
             login_url = login_url + '/cellphone?phone='
 
-        data = await http_cookie(login_url + f'{quote(username)}&password={quote(password)}&md5_password={md5(password)}')
+        data = await http_cookie(login_url + f'{quote(username)}&md5_password={md5(password)}')
         _LOGGER.debug(data)
         res_data = data.get('data', {})
         # 登录成功
