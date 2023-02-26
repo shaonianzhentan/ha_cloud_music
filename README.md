@@ -41,9 +41,11 @@ https://github.com/Binaryify/NeteaseCloudMusicApi
 播放喜马拉雅专辑 `cloudmusic://xmly/playlist?id=258244`
 - cloudmusic://xmly/playlist?id=专辑ID
 
-全网音乐搜索播放 `cloudmusic://search/name?kv=倒影 周杰伦`
+（不建议使用）全网音乐搜索播放 `cloudmusic://search/name?kv=倒影 周杰伦`
 - cloudmusic://search/name?kv=关键词
 
+（推荐）音乐搜索播放 `cloudmusic://search/play?kv=倒影 周杰伦`
+- cloudmusic://search/play?kv=关键词
 
 configuration.yaml
 ```yaml
@@ -63,10 +65,7 @@ media_player.yun_yin_le:
 ## 关联项目
 
 - https://github.com/shaonianzhentan/cloud_music_mpd
-- https://github.com/shaonianzhentan/ha_music_source
 - https://github.com/shaonianzhentan/ha_windows
-
-
 
 ## 如果这个项目对你有帮助，请我喝杯<del style="font-size: 14px;">咖啡</del>奶茶吧😘
 |支付宝|微信|

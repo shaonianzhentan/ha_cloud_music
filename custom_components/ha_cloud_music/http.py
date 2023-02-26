@@ -13,6 +13,9 @@ class HttpView(HomeAssistantView):
     name = f"cloud_music:url"
     requires_auth = False
 
+    play_key = None
+    play_url = None
+
     async def get(self, request):
         hass = request.app["hass"]        
         cloud_music = hass.data['cloud_music']
@@ -30,6 +33,11 @@ class HttpView(HomeAssistantView):
         if id is None or source is None:
             return web.HTTPFound(play_url)
 
+        # 缓存KEY
+        play_key = f'{id}{song}{singer}{source}'
+        if self.play_key == play_key:
+            return web.HTTPFound(self.play_url)
+            
         source = int(source)
         if source == MusicSource.PLAYLIST.value \
             or source == MusicSource.ARTISTS.value \
@@ -40,9 +48,9 @@ class HttpView(HomeAssistantView):
                 if url is not None:
                     # 收费音乐
                     if fee == 1:
-                        result = await self.async_music_source(hass, song, singer)
+                        result = await cloud_music.async_music_source(f'{song} - {singer}')
                         if result is not None:
-                            url = result
+                            url = result.url
 
                     play_url = url
                 else:
@@ -51,37 +59,12 @@ class HttpView(HomeAssistantView):
                     if url is not None:
                         play_url = url
                     else:
-                        result = await self.async_music_source(hass, song, singer)
+                        result = await cloud_music.async_music_source(f'{song} - {singer}')
                         if result is not None:
-                            play_url = result
+                            play_url = result.url
 
-        print(play_url)
+        print(play_url)        
+        self.play_key = play_key
+        self.play_url = play_url
         # 重定向到可播放链接
         return web.HTTPFound(play_url)
-
-
-    async def async_music_source(self, hass, song, singer):
-        # 使用全网音乐搜索
-        ha_music_source = hass.data.get('ha_music_source')
-        if ha_music_source is not None:
-            return await ha_music_source.async_song_url(song, singer)
-        else:
-            keyword = f'{song} - {singer}'
-            url = 'https://thewind.xyz/api/new/search'
-            files = {
-                "src": (None, "KW"),
-                "keyword": (None, keyword),
-                "num": (None, 10)
-            }
-            response = await hass.async_add_executor_job(requests.post, url, files=files)
-            result = response.json()
-            for item in result:
-                # print(item['songName'], item['singersName'], item['albumName'])
-                songSrc = item['songSrc']
-                songId = item['songId']
-                play_url = f'https://thewind.xyz/api/new/player?shareId={songSrc}_{songId}'
-                print(play_url)
-                response = await hass.async_add_executor_job(requests.get, url)
-                result = response.json()
-                if len(result) > 0:
-                    return result[0].get('url')

@@ -102,6 +102,7 @@ class CloudMusicRouter():
 
     # 搜索名称
     search_name = f'{search_protocol}name'
+    search_play = f'{search_protocol}play'
 
 
 async def async_browse_media(media_player, media_content_type, media_content_id):
@@ -705,6 +706,8 @@ async def async_play_media(media_player, cloud_music, media_content_id):
         playlist = await cloud_music.async_fm_playlist(id, page, size)
     elif media_content_id.startswith(CloudMusicRouter.search_name):
         playlist = await cloud_music.async_search_song(keywords)
+    elif media_content_id.startswith(CloudMusicRouter.search_play):
+        playlist = await cloud_music.async_play_song(keywords)
 
     if playlist is not None:
         media_player.playindex = playindex

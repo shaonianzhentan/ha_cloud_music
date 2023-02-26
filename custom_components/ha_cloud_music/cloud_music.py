@@ -1,4 +1,4 @@
-import uuid, time, logging, os, hashlib, aiohttp
+import uuid, time, logging, os, hashlib, aiohttp, requests
 from urllib.parse import quote
 from homeassistant.helpers.network import get_url
 from .http_api import http_get, http_cookie
@@ -292,6 +292,36 @@ class CloudMusic():
 
         return list(map(format_playlist, data['items']))
 
+    # 搜索音乐播放
+    async def async_play_song(self, name):
+        
+        if '周杰伦' in name:
+            result = await self.async_music_source(name)
+            if result is not None:
+                return [ result ]
+
+        res = await self.netease_cloud_music(f'/cloudsearch?limit=1&keywords={name}')
+        if res['code'] == 200:
+            
+            songs = res['result']['songs']
+            if len(songs) > 0:
+                item = songs[0]
+
+                al = item['al']
+                ar = item['ar'][0]
+
+                id = item['id']
+                song = item['name']
+                album = al.get('name')
+                singer = ar.get('name')
+                picUrl = self.netease_image_url(al.get('picUrl'))
+                duration = item.get('dt')
+
+                url = self.get_play_url(id, song, singer, MusicSource.PLAYLIST.value)
+                
+                music_info = MusicInfo(id, song, singer, album, duration, url, picUrl, MusicSource.URL.value)
+                return [ music_info ]
+
     # 音乐搜索
     async def async_search_song(self, name):
         ha_music_source = self.hass.data.get('ha_music_source')
@@ -374,3 +404,29 @@ class CloudMusic():
                 "source": MusicSource.ARTISTS.value
             }, res['result']['artists']))
         return _list
+
+    async def async_music_source(self, keyword):
+        url = 'https://thewind.xyz/api/new/search'
+        files = {
+            "src": (None, "KW"),
+            "keyword": (None, keyword),
+            "num": (None, 10)
+        }
+        response = await self.hass.async_add_executor_job(requests.post, url, files)
+        result = response.json()
+        # print(result)
+        if len(result) > 0:
+            result = list(filter(lambda x: x.get('songId') is not None, result))
+            if len(result) > 0:
+                item = result[0]
+                albumName = item.get('albumName')
+                songSrc = item['songSrc']
+                songId = item['songId']
+                play_url = f'https://thewind.xyz/api/new/player?shareId={songSrc}_{songId}'
+                # print(play_url)
+                response = await self.hass.async_add_executor_job(requests.get, play_url)
+                result = response.json()
+                # print(result)
+                if isinstance(result, list) and len(result) > 0:
+                    info = result[0]
+                    return MusicInfo(songId, info.get('title'), info.get('author'), albumName, 0, info.get('url'), info.get('pic'), MusicSource.URL.value)
