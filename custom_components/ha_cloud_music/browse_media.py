@@ -71,6 +71,7 @@ fm_protocol = 'cloudmusic://fm/'
 qq_protocol = 'cloudmusic://qq/'
 ting_protocol = 'cloudmusic://ting/'
 search_protocol = 'cloudmusic://search/'
+play_protocol = 'cloudmusic://play/'
 
 # 云音乐路由表
 class CloudMusicRouter():
@@ -103,6 +104,13 @@ class CloudMusicRouter():
     # 搜索名称
     search_name = f'{search_protocol}name'
     search_play = f'{search_protocol}play'
+
+    # 播放
+    play_list = f'{play_protocol}list'
+    play_radio = f'{play_protocol}radio'
+    play_xmly = f'{play_protocol}xmly'
+    play_fm = f'{play_protocol}fm'
+    
 
 
 async def async_browse_media(media_player, media_content_type, media_content_id):
@@ -708,6 +716,9 @@ async def async_play_media(media_player, cloud_music, media_content_id):
         playlist = await cloud_music.async_search_song(keywords)
     elif media_content_id.startswith(CloudMusicRouter.search_play):
         playlist = await cloud_music.async_play_song(keywords)
+    elif media_content_id.startswith(CloudMusicRouter.play_list):
+        playlist = await cloud_music.async_play_playlist(keywords)
+        
 
     if playlist is not None:
         media_player.playindex = playindex

@@ -322,6 +322,13 @@ class CloudMusic():
                 music_info = MusicInfo(id, song, singer, album, duration, url, picUrl, MusicSource.URL.value)
                 return [ music_info ]
 
+    # 歌单
+    async def async_play_playlist(self, name):
+        res = await self.netease_cloud_music(f'/search?limit=1&keywords={name}&type=1000')
+        if res['code'] == 200:
+            playlists = res['result']['playlists']
+            return await self.async_get_playlist(playlists[0]['id'])
+
     # 音乐搜索
     async def async_search_song(self, name):
         ha_music_source = self.hass.data.get('ha_music_source')
