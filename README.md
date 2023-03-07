@@ -29,23 +29,28 @@ https://github.com/Binaryify/NeteaseCloudMusicApi
 
 ## 使用 - [插件图片预览](https://github.com/shaonianzhentan/image/blob/main/ha_cloud_music/README.md)
 
-播放网易云音乐歌单 `cloudmusic://163/playlist?id=25724904`
-- cloudmusic://163/playlist?id=歌单ID
+> **指定ID播放**
 
-播放网易云音乐电台 `cloudmusic://163/radio/playlist?id=1008`
-- cloudmusic://163/radio/playlist?id=电台ID
+- 播放网易云音乐歌单 `cloudmusic://163/playlist?id=25724904`
+  - cloudmusic://163/playlist?id=歌单ID
 
-播放网易云音乐歌手 `cloudmusic://163/artist/playlist?id=2116`
-- cloudmusic://163/artist/playlist?id=歌手ID
+- 播放网易云音乐电台 `cloudmusic://163/radio/playlist?id=1008`
+  - cloudmusic://163/radio/playlist?id=电台ID
 
-播放喜马拉雅专辑 `cloudmusic://xmly/playlist?id=258244`
-- cloudmusic://xmly/playlist?id=专辑ID
+- 播放网易云音乐歌手 `cloudmusic://163/artist/playlist?id=2116`
+  - cloudmusic://163/artist/playlist?id=歌手ID
 
-（不建议使用）全网音乐搜索播放 `cloudmusic://search/name?kv=倒影 周杰伦`
-- cloudmusic://search/name?kv=关键词
+- 播放喜马拉雅专辑 `cloudmusic://xmly/playlist?id=258244`
+  - cloudmusic://xmly/playlist?id=专辑ID
 
-（推荐）音乐搜索播放 `cloudmusic://search/play?kv=倒影 周杰伦`
-- cloudmusic://search/play?kv=关键词
+> **搜索播放**（慎用，还在实现中...）
+
+- [ ] 歌单搜索播放 `cloudmusic://play/song?kv=关键词`
+- [ ] 歌单搜索播放 `cloudmusic://play/singer?kv=关键词`
+- [x] 歌单搜索播放 `cloudmusic://play/list?kv=关键词`
+- [ ] 歌单搜索播放 `cloudmusic://play/radio?kv=关键词`
+- [ ] 歌单搜索播放 `cloudmusic://play/xmly?kv=关键词`
+- [ ] 歌单搜索播放 `cloudmusic://play/fm?kv=关键词`
 
 configuration.yaml
 ```yaml
