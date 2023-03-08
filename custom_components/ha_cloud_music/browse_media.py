@@ -106,6 +106,8 @@ class CloudMusicRouter():
     search_play = f'{search_protocol}play'
 
     # 播放
+    play_song = f'{play_protocol}song'
+    play_singer = f'{play_protocol}singer'
     play_list = f'{play_protocol}list'
     play_radio = f'{play_protocol}radio'
     play_xmly = f'{play_protocol}xmly'
@@ -715,9 +717,18 @@ async def async_play_media(media_player, cloud_music, media_content_id):
     elif media_content_id.startswith(CloudMusicRouter.search_name):
         playlist = await cloud_music.async_search_song(keywords)
     elif media_content_id.startswith(CloudMusicRouter.search_play):
+        ''' 外部接口搜索 '''
+        result = await cloud_music.async_music_source(keywords)
+        if result is not None:
+            playlist = [ result ]
+    elif media_content_id.startswith(CloudMusicRouter.play_song):
         playlist = await cloud_music.async_play_song(keywords)
     elif media_content_id.startswith(CloudMusicRouter.play_list):
         playlist = await cloud_music.async_play_playlist(keywords)
+    elif media_content_id.startswith(CloudMusicRouter.play_radio):
+        playlist = await cloud_music.async_play_radio(keywords)
+    elif media_content_id.startswith(CloudMusicRouter.play_singer):
+        playlist = await cloud_music.async_play_singer(keywords)
         
 
     if playlist is not None:

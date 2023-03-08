@@ -322,12 +322,26 @@ class CloudMusic():
                 music_info = MusicInfo(id, song, singer, album, duration, url, picUrl, MusicSource.URL.value)
                 return [ music_info ]
 
+    # 歌手
+    async def async_play_singer(self, keywords):
+        res = await self.netease_cloud_music(f'/search?limit=1&keywords={keywords}&type=100')
+        if res['code'] == 200:
+            playlists = res['result']['artists']
+            return await self.async_get_artists(playlists[0]['id'])
+
     # 歌单
-    async def async_play_playlist(self, name):
-        res = await self.netease_cloud_music(f'/search?limit=1&keywords={name}&type=1000')
+    async def async_play_playlist(self, keywords):
+        res = await self.netease_cloud_music(f'/search?limit=1&keywords={keywords}&type=1000')
         if res['code'] == 200:
             playlists = res['result']['playlists']
             return await self.async_get_playlist(playlists[0]['id'])
+
+    # 电台
+    async def async_play_radio(self, keywords):
+        res = await self.netease_cloud_music(f'/search?limit=1&keywords={keywords}&type=1009')
+        if res['code'] == 200:
+            playlists = res['result']['djRadios']
+            return await self.async_get_djradio(playlists[0]['id'])
 
     # 音乐搜索
     async def async_search_song(self, name):

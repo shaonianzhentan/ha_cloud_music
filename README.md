@@ -32,25 +32,18 @@ https://github.com/Binaryify/NeteaseCloudMusicApi
 > **指定ID播放**
 
 - 播放网易云音乐歌单 `cloudmusic://163/playlist?id=25724904`
-  - cloudmusic://163/playlist?id=歌单ID
-
 - 播放网易云音乐电台 `cloudmusic://163/radio/playlist?id=1008`
-  - cloudmusic://163/radio/playlist?id=电台ID
-
 - 播放网易云音乐歌手 `cloudmusic://163/artist/playlist?id=2116`
-  - cloudmusic://163/artist/playlist?id=歌手ID
-
 - 播放喜马拉雅专辑 `cloudmusic://xmly/playlist?id=258244`
-  - cloudmusic://xmly/playlist?id=专辑ID
 
-> **搜索播放**（慎用，还在实现中...）
+> **搜索播放**
 
-- [ ] 歌单搜索播放 `cloudmusic://play/song?kv=关键词`
-- [ ] 歌单搜索播放 `cloudmusic://play/singer?kv=关键词`
+- [x] 音乐搜索播放 `cloudmusic://play/song?kv=关键词`
+- [x] 歌手搜索播放 `cloudmusic://play/singer?kv=关键词`
 - [x] 歌单搜索播放 `cloudmusic://play/list?kv=关键词`
-- [ ] 歌单搜索播放 `cloudmusic://play/radio?kv=关键词`
-- [ ] 歌单搜索播放 `cloudmusic://play/xmly?kv=关键词`
-- [ ] 歌单搜索播放 `cloudmusic://play/fm?kv=关键词`
+- [x] 电台搜索播放 `cloudmusic://play/radio?kv=关键词`
+- [ ] 喜马拉雅搜索播放 `cloudmusic://play/xmly?kv=关键词`
+- [ ] FM搜索播放 `cloudmusic://play/fm?kv=关键词`
 
 configuration.yaml
 ```yaml
