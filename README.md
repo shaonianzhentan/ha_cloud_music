@@ -45,6 +45,9 @@ https://github.com/Binaryify/NeteaseCloudMusicApi
 - [ ] 喜马拉雅搜索播放 `cloudmusic://play/xmly?kv=关键词`
 - [ ] FM搜索播放 `cloudmusic://play/fm?kv=关键词`
 
+> **登录后播放**
+- [x] 每日推荐 `cloudmusic://163/my/daily`
+
 configuration.yaml
 ```yaml
 homeassistant:
