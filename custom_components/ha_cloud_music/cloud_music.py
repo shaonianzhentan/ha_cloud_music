@@ -91,6 +91,7 @@ class CloudMusic():
     # 获取云盘音乐链接
     async def cloud_song_url(self, id):
         res = await self.netease_cloud_music(f'/user/cloud')
+        _LOGGER.debug(res)
         filter_list = list(filter(lambda x:x['simpleSong']['id'] == id, res['data']))
         if len(filter_list) > 0:
             songId = filter_list[0]['songId']
@@ -324,6 +325,9 @@ class CloudMusic():
 
     # 歌手
     async def async_play_singer(self, keywords):
+        if keywords == '周杰伦':
+            return await self.async_get_playlist(422947217)
+
         res = await self.netease_cloud_music(f'/search?limit=1&keywords={keywords}&type=100')
         if res['code'] == 200:
             playlists = res['result']['artists']
@@ -411,23 +415,9 @@ class CloudMusic():
             }, res['result']['playlists']))
         return _list
 
-    # 歌手
-    async def async_search_singer(self, name):
-        _list = []
-        res = await self.netease_cloud_music(f'/search?keywords={name}&type=100')
-        if res['code'] == 200:
-            _list = list(map(lambda item: {
-                "id": item['id'],
-                "name": item['name'],
-                "cover": item['picUrl'],
-                "intro": '、'.join(item['alias']),
-                "creator": item['name'],
-                "source": MusicSource.ARTISTS.value
-            }, res['result']['artists']))
-        return _list
-
     async def async_music_source(self, keyword):
-        url = 'https://thewind.xyz/api/new/search'
+        api = 'https://thewind.xyz/music/api/'
+        url = f'{api}search'
         files = {
             "src": (None, "KW"),
             "keyword": (None, keyword),
@@ -443,7 +433,7 @@ class CloudMusic():
                 albumName = item.get('albumName')
                 songSrc = item['songSrc']
                 songId = item['songId']
-                play_url = f'https://thewind.xyz/api/new/player?shareId={songSrc}_{songId}'
+                play_url = f'{api}player?shareId={songSrc}_{songId}'
                 # print(play_url)
                 response = await self.hass.async_add_executor_job(requests.get, play_url)
                 result = response.json()
