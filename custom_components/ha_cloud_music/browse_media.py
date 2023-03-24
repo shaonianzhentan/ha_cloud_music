@@ -2,7 +2,7 @@
 from enum import Enum
 import logging, os, random
 from urllib.parse import urlparse, parse_qs, parse_qsl, quote
-
+from homeassistant.util.json import save_json
 from custom_components.ha_cloud_music.http_api import http_get
 from .utils import parse_query
 
@@ -83,6 +83,8 @@ class CloudMusicRouter():
     playlist = f'{cloudmusic_protocol}playlist'
     radio_playlist = f'{cloudmusic_protocol}radio/playlist'
     artist_playlist = f'{cloudmusic_protocol}artist/playlist'
+
+    my_login = f'{cloudmusic_protocol}my/login'
     my_daily = f'{cloudmusic_protocol}my/daily'
     my_recommend_resource = f'{cloudmusic_protocol}my/recommend_resource'
     my_cloud = f'{cloudmusic_protocol}my/cloud'
@@ -183,6 +185,21 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
                     #'thumbnail': 'http://p1.music.126.net/9M-U5gX1gccbuBXZ6JnTUg==/109951165264087991.jpg'
                 }
             ])
+        else:
+            res = await cloud_music.netease_cloud_music('/login/qr/key')
+            if res['code'] == 200:
+                codekey = res['data']['unikey']
+                res = await cloud_music.netease_cloud_music(f'/login/qr/create?key={codekey}')
+                qrurl = res['data']['qrurl']
+                print(qrurl)
+                children.extend([
+                    {
+                        'title': 'APP扫码授权后，点击这里登录',
+                        'path': CloudMusicRouter.my_login + '?id=' + codekey,
+                        'type': MEDIA_TYPE_MUSIC,
+                        'thumbnail': f'https://cdn.dotmaui.com/qrc/?t={qrurl}'
+                    }
+                ])
 
         # 扩展资源
         children.extend([
@@ -210,9 +227,11 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
         for item in children:
             title = item['title']
             media_content_type = item['type']
-            media_content_id = item['path'] + f'?title={quote(title)}'
+            media_content_id = item['path']
+            if '?' not in media_content_id:
+                media_content_id = media_content_id + f'?title={quote(title)}'
             thumbnail = item.get('thumbnail')
-            if thumbnail is not None:
+            if thumbnail is not None and 'music.126.net' in thumbnail:
                 thumbnail = cloud_music.netease_image_url(thumbnail)
             library_info.children.append(
                 BrowseMedia(
@@ -235,7 +254,7 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
     url = urlparse(media_content_id)
     query = parse_query(url.query)
 
-    title = query['title']
+    title = query.get('title')
     id = query.get('id')
 
     if media_content_id.startswith(CloudMusicRouter.local_playlist):
@@ -266,6 +285,31 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
                     thumbnail=item.thumbnail
                 )
             )
+        return library_info
+    if media_content_id.startswith(CloudMusicRouter.my_login):
+        # 用户登录        
+        res = await cloud_music.netease_cloud_music(f'/login/qr/check?key={id}')
+        _LOGGER.debug(res)
+        message = res['message']
+        if res['code'] == 803:
+            title = f'{message}，点击返回开始使用吧'
+            cloud_music.userinfo['cookie'] = res['cookie']
+            res = await cloud_music.netease_cloud_music('/user/account')
+            _LOGGER.debug(res)
+            cloud_music.userinfo['uid'] = res['account']['id']
+            save_json(cloud_music.userinfo_filepath, cloud_music.userinfo)
+        else:
+            title = f'{message}，点击返回重试'
+
+        library_info = BrowseMedia(
+            media_class=MEDIA_CLASS_DIRECTORY,
+            media_content_id=media_content_id,
+            media_content_type=MEDIA_TYPE_PLAYLIST,
+            title=title,
+            can_play=False,
+            can_expand=False,
+            children=[],
+        )
         return library_info
     if media_content_id.startswith(CloudMusicRouter.my_daily):
         # 每日推荐
