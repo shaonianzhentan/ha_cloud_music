@@ -1,6 +1,6 @@
 """Support for media browsing."""
 from enum import Enum
-import logging, os, random
+import logging, os, random, time
 from urllib.parse import urlparse, parse_qs, parse_qsl, quote
 from homeassistant.util.json import save_json
 from custom_components.ha_cloud_music.http_api import http_get
@@ -186,20 +186,26 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
                 }
             ])
         else:
-            res = await cloud_music.netease_cloud_music('/login/qr/key')
-            if res['code'] == 200:
-                codekey = res['data']['unikey']
-                res = await cloud_music.netease_cloud_music(f'/login/qr/create?key={codekey}')
-                qrurl = res['data']['qrurl']
-                print(qrurl)
-                children.extend([
-                    {
-                        'title': 'APP扫码授权后，点击这里登录',
-                        'path': CloudMusicRouter.my_login + '?id=' + codekey,
-                        'type': MEDIA_TYPE_MUSIC,
-                        'thumbnail': f'https://cdn.dotmaui.com/qrc/?t={qrurl}'
-                    }
-                ])
+            qr = cloud_music.login_qrcode
+            now = int(time.time())
+            # 超过5分钟重新获取验证码
+            if qr['time'] is None or now - qr['time'] > 300:
+                res = await cloud_music.netease_cloud_music('/login/qr/key')
+                if res['code'] == 200:
+                    codekey = res['data']['unikey']
+                    res = await cloud_music.netease_cloud_music(f'/login/qr/create?key={codekey}')
+                    qr['key'] = codekey
+                    qr['url'] = res['data']['qrurl']
+                    qr['time'] = now
+
+            children.extend([
+                {
+                    'title': 'APP扫码授权后，点击这里登录',
+                    'path': CloudMusicRouter.my_login + '?id=' + qr['key'],
+                    'type': MEDIA_TYPE_MUSIC,
+                    'thumbnail': f'https://cdn.dotmaui.com/qrc/?t={qr["url"]}'
+                }
+            ])
 
         # 扩展资源
         children.extend([

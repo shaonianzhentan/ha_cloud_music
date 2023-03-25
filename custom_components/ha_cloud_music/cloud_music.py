@@ -35,6 +35,12 @@ class CloudMusic():
         self.userinfo_filepath = self.get_storage_dir('cloud_music.userinfo')
         if os.path.exists(self.userinfo_filepath):
             self.userinfo = load_json(self.userinfo_filepath)
+        # 登录二维码
+        self.login_qrcode = {
+            'key': None,
+            'time': None,
+            'url': None
+        }
 
     def get_storage_dir(self, file_name):
         return os.path.abspath(f'{STORAGE_DIR}/{file_name}')
