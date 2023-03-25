@@ -294,12 +294,24 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
         return library_info
     if media_content_id.startswith(CloudMusicRouter.my_login):
         # 用户登录        
-        res = await cloud_music.netease_cloud_music(f'/login/qr/check?key={id}')
+        res = await cloud_music.netease_cloud_music(f'/login/qr/check?key={id}&t={int(time.time())}')
         _LOGGER.debug(res)
         message = res['message']
         if res['code'] == 803:
-            title = f'{message}，点击返回开始使用吧'
-            cloud_music.userinfo['cookie'] = res['cookie']
+            title = f'{message}，刷新页面开始使用吧'
+            # ck格式化
+            arr = res['cookie'].split(';')
+            cookie = {}
+            for item in arr:
+                x = item.strip()
+                if x == '' or x.startswith('Max-Age=') or x.startswith('Expires=') \
+                    or x.startswith('Path=') or x.startswith('HTTPOnly'):
+                    continue
+                kv = x.split('=')
+                if kv[1] != '':
+                    cookie[kv[0]] = kv[1]
+            # 设置cookie
+            cloud_music.userinfo['cookie'] = cookie
             res = await cloud_music.netease_cloud_music('/user/account')
             _LOGGER.debug(res)
             cloud_music.userinfo['uid'] = res['account']['id']
