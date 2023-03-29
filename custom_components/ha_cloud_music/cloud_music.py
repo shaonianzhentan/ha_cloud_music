@@ -13,6 +13,8 @@ from .browse_media import (
     async_media_next_track
 )
 
+from .music_parser import get_music, get_music2
+
 def md5(data):
     return hashlib.md5(data.encode('utf-8')).hexdigest()
 
@@ -422,28 +424,11 @@ class CloudMusic():
         return _list
 
     async def async_music_source(self, keyword):
-        api = 'https://thewind.xyz/music/api/'
-        url = f'{api}search'
-        files = {
-            "src": (None, "KW"),
-            "keyword": (None, keyword),
-            "num": (None, 10)
-        }
-        response = await self.hass.async_add_executor_job(requests.post, url, files)
-        result = response.json()
-        # print(result)
-        if len(result) > 0:
-            result = list(filter(lambda x: x.get('songId') is not None and x.get('url', '') != '', result))
-            if len(result) > 0:
-                item = result[0]
-                albumName = item.get('albumName')
-                songSrc = item['songSrc']
-                songId = item['songId']
-                play_url = f'{api}player?shareId={songSrc}_{songId}'
-                # print(play_url)
-                response = await self.hass.async_add_executor_job(requests.get, play_url)
-                result = response.json()
-                # print(result)
-                if isinstance(result, list) and len(result) > 0:
-                    info = result[0]
-                    return MusicInfo(songId, info.get('title'), info.get('author'), albumName, 0, info.get('url'), info.get('pic'), MusicSource.URL.value)
+        
+        result = await self.hass.async_add_executor_job(get_music, keyword)
+        if result is not None:
+            return result
+
+        result = await self.hass.async_add_executor_job(get_music2, keyword)
+        if result is not None:
+            return result
