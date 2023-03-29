@@ -433,7 +433,7 @@ class CloudMusic():
         result = response.json()
         # print(result)
         if len(result) > 0:
-            result = list(filter(lambda x: x.get('songId') is not None, result))
+            result = list(filter(lambda x: x.get('songId') is not None and x.get('url', '') != '', result))
             if len(result) > 0:
                 item = result[0]
                 albumName = item.get('albumName')
