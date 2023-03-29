@@ -98,13 +98,13 @@ class CloudMusic():
 
     # 获取云盘音乐链接
     async def cloud_song_url(self, id):
-        res = await self.netease_cloud_music(f'/user/cloud')
-        _LOGGER.debug(res)
-        filter_list = list(filter(lambda x:x['simpleSong']['id'] == id, res['data']))
-        if len(filter_list) > 0:
-            songId = filter_list[0]['songId']
-            url, fee = await self.song_url(songId)
-            return url
+        if self.userinfo.get('uid') is not None:
+            res = await self.netease_cloud_music(f'/user/cloud')
+            filter_list = list(filter(lambda x:x['simpleSong']['id'] == id, res['data']))
+            if len(filter_list) > 0:
+                songId = filter_list[0]['songId']
+                url, fee = await self.song_url(songId)
+                return url
 
     # 获取歌单列表
     async def async_get_playlist(self, playlist_id):
@@ -423,8 +423,10 @@ class CloudMusic():
             }, res['result']['playlists']))
         return _list
 
-    async def async_music_source(self, keyword):
-        
+    async def async_music_source(self, song, singer=''):
+        keyword = f'{singer} {song}'.strip()
+        _LOGGER.debug(keyword)
+
         result = await self.hass.async_add_executor_job(get_music, keyword)
         if result is not None:
             return result

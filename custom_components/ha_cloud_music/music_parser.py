@@ -15,12 +15,12 @@ def get_music(keywords):
       song = a[0].string
       singer = a[1].string
 
-      # print(href)
+      #print(href)
       response = session.get(f'{api}{href}')
 
       pattren = re.compile(r'https://[^\s]+.mp3')
       url_lst = pattren.findall(response.text)
-      # print(url_lst)
+      #print(url_lst)
       if len(url_lst) > 0:
         soup = BeautifulSoup(response.text.encode(response.encoding), 'lxml')
         cover = soup.select('#cover')

@@ -1,10 +1,13 @@
 {
     "domain": "ha_cloud_music",
     "name": "\u4E91\u97F3\u4E50",
-    "version": "2023.3.29",
+    "version": "2023.3.30",
     "config_flow": true,
     "documentation": "https://github.com/shaonianzhentan/ha_cloud_music",
-    "requirements": [],
+    "requirements": [
+        "beautifulsoup4>=4.11.1",
+        "lxml>=4.9.1"
+    ],
     "codeowners": [
         "@shaonianzhentan"
     ],

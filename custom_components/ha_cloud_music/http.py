@@ -48,7 +48,7 @@ class HttpView(HomeAssistantView):
                 if url is not None:
                     # 收费音乐
                     if fee == 1:
-                        result = await cloud_music.async_music_source(f'{song} - {singer}')
+                        result = await cloud_music.async_music_source(song, singer)
                         if result is not None:
                             url = result.url
 
@@ -59,7 +59,7 @@ class HttpView(HomeAssistantView):
                     if url is not None:
                         play_url = url
                     else:
-                        result = await cloud_music.async_music_source(f'{song} - {singer}')
+                        result = await cloud_music.async_music_source(song, singer)
                         if result is not None:
                             play_url = result.url
 
