@@ -6,6 +6,7 @@ from homeassistant.util.json import save_json
 from custom_components.ha_cloud_music.http_api import http_get
 from .utils import parse_query
 
+from http.cookies import SimpleCookie
 from homeassistant.components import media_source
 from homeassistant.components.media_player import (
     BrowseError, BrowseMedia,
@@ -300,16 +301,8 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
         if res['code'] == 803:
             title = f'{message}，刷新页面开始使用吧'
             # ck格式化
-            arr = res['cookie'].split(';')
-            cookie = {}
-            for item in arr:
-                x = item.strip()
-                if x == '' or x.startswith('Max-Age=') or x.startswith('Expires=') \
-                    or x.startswith('Path=') or x.startswith('HTTPOnly'):
-                    continue
-                kv = x.split('=')
-                if kv[1] != '':
-                    cookie[kv[0]] = kv[1]
+            s = SimpleCookie(res['cookie'])
+            cookie = {v.key:v.value for k,v in s.items()}
             # 设置cookie
             cloud_music.userinfo['cookie'] = cookie
             res = await cloud_music.netease_cloud_music('/user/account')
