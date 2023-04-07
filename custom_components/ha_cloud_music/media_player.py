@@ -116,6 +116,13 @@ class CloudMusicMediaPlayer(MediaPlayerEntity):
                         self.before_state = None
                         return
 
+                # 源播放器空闲 & 当前正在播放
+                if self.before_state['media_duration'] == 0 and self.before_state['media_position'] == 0 and self.current_state == STATE_IDLE \
+                    and self._attr_media_duration == 0 and self._attr_media_position == 0 and self._attr_state == STATE_PLAYING:
+                        self.hass.async_create_task(self.async_media_next_track())
+                        self.before_state = None
+                        return
+
             self.before_state = {
                 'media_position': self._attr_media_position,
                 'media_duration': self._attr_media_duration,
