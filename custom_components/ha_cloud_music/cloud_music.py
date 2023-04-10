@@ -5,6 +5,7 @@ from .http_api import http_get, http_cookie
 from .models.music_info import MusicInfo, MusicSource
 from homeassistant.helpers.storage import STORAGE_DIR
 from homeassistant.util.json import load_json, save_json
+from http.cookies import SimpleCookie
 
 from .browse_media import (
     async_browse_media, 
@@ -75,6 +76,33 @@ class CloudMusic():
         else:
             print(res_data)
 
+    # 二维码登录
+    async def qrcode_login(self, cookie_str):
+        s = SimpleCookie(cookie_str)
+        cookie = {v.key:v.value for k,v in s.items()}
+        # 设置cookie
+        self.userinfo['cookie'] = cookie
+        res = await self.netease_cloud_music('/user/account')
+        self.userinfo['uid'] = res['account']['id']
+        save_json(self.userinfo_filepath, self.userinfo)
+
+    # 退出
+    def logout(self):
+        self.userinfo = {}
+        self.login_qrcode = {
+            'key': None,
+            'time': None,
+            'url': None
+        }
+        self.notification('用户凭据失效，请重新登录。如果多次失败，请联系插件作者')
+
+    def notification(self, message, notification_id='ha_cloud_music'):
+        self.hass.services.call('persistent_notification', 'create', {
+            'title': '云音乐',
+            'message': message,
+            'notification_id': notification_id
+        })
+
     # 获取播放链接
     def get_play_url(self, id, song, singer, source):
         base_url = get_url(self.hass, prefer_external=True)
@@ -84,7 +112,10 @@ class CloudMusic():
 
     # 网易云音乐接口
     async def netease_cloud_music(self, url):
-        return await http_get(self.api_url + url, self.userinfo.get('cookie', {}))
+        res = await http_get(self.api_url + url, self.userinfo.get('cookie', {}))
+        if res.get('code') == 301 and res.get('msg') == '需要登录':
+            self.logout()
+        return res
 
     # 获取音乐链接
     async def song_url(self, id):
