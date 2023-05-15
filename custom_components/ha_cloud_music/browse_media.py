@@ -185,27 +185,8 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
                     #'thumbnail': 'http://p1.music.126.net/9M-U5gX1gccbuBXZ6JnTUg==/109951165264087991.jpg'
                 }
             ])
-        else:
-            qr = cloud_music.login_qrcode
-            now = int(time.time())
-            # 超过5分钟重新获取验证码
-            if qr['time'] is None or now - qr['time'] > 300:
-                res = await cloud_music.netease_cloud_music('/login/qr/key')
-                if res['code'] == 200:
-                    codekey = res['data']['unikey']
-                    res = await cloud_music.netease_cloud_music(f'/login/qr/create?key={codekey}')
-                    qr['key'] = codekey
-                    qr['url'] = res['data']['qrurl']
-                    qr['time'] = now
-
-            children.extend([
-                {
-                    'title': 'APP扫码授权后，点击这里登录',
-                    'path': CloudMusicRouter.my_login + '?id=' + qr['key'],
-                    'type': MEDIA_TYPE_MUSIC,
-                    'thumbnail': f'https://cdn.dotmaui.com/qrc/?t={qr["url"]}'
-                }
-            ])
+            
+            
 
         # 扩展资源
         children.extend([
@@ -217,6 +198,10 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
             },{
                 'title': 'FM电台',
                 'path': CloudMusicRouter.fm_channel,
+                'type': MEDIA_TYPE_CHANNEL
+            },{
+                'title': '二维码登录',
+                'path': CloudMusicRouter.my_login + '?action=menu',
                 'type': MEDIA_TYPE_CHANNEL
             }
         ])
@@ -293,25 +278,58 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
             )
         return library_info
     if media_content_id.startswith(CloudMusicRouter.my_login):
-        # 用户登录        
-        res = await cloud_music.netease_cloud_music(f'/login/qr/check?key={id}&t={int(time.time())}')
-        message = res['message']
-        if res['code'] == 803:
-            title = f'{message}，刷新页面开始使用吧'
-            await cloud_music.qrcode_login(res['cookie'])
-        else:
-            title = f'{message}，点击返回重试'
+        action = query.get('action')
+        if action == 'menu':
+            # 显示菜单
+            qr = cloud_music.login_qrcode
+            now = int(time.time())
+            # 超过5分钟重新获取验证码
+            if qr['time'] is None or now - qr['time'] > 300:
+                res = await cloud_music.netease_cloud_music('/login/qr/key')
+                if res['code'] == 200:
+                    codekey = res['data']['unikey']
+                    res = await cloud_music.netease_cloud_music(f'/login/qr/create?key={codekey}')
+                    qr['key'] = codekey
+                    qr['url'] = res['data']['qrurl']
+                    qr['time'] = now
 
-        library_info = BrowseMedia(
-            media_class=MEDIA_CLASS_DIRECTORY,
-            media_content_id=media_content_id,
-            media_content_type=MEDIA_TYPE_PLAYLIST,
-            title=title,
-            can_play=False,
-            can_expand=False,
-            children=[],
-        )
-        return library_info
+            library_info = BrowseMedia(
+                media_class=MEDIA_CLASS_DIRECTORY,
+                media_content_id=media_content_id,
+                media_content_type=MEDIA_CLASS_TRACK,
+                title=title,
+                can_play=False,
+                can_expand=True,
+                children=[
+                    {
+                        'title': 'APP扫码授权后，点击这里登录',
+                        'path': CloudMusicRouter.my_login + '?action=login&id=' + qr['key'],
+                        'type': MEDIA_TYPE_MUSIC,
+                        'thumbnail': f'https://cdn.dotmaui.com/qrc/?t={qr["url"]}'
+                    }
+                ],
+            )
+            return library_info
+        elif action == 'login':
+            # 用户登录
+            res = await cloud_music.netease_cloud_music(f'/login/qr/check?key={id}&t={int(time.time())}')
+            message = res['message']
+            if res['code'] == 803:
+                title = f'{message}，刷新页面开始使用吧'
+                await cloud_music.qrcode_login(res['cookie'])
+            else:
+                title = f'{message}，点击返回重试'
+
+            library_info = BrowseMedia(
+                media_class=MEDIA_CLASS_DIRECTORY,
+                media_content_id=media_content_id,
+                media_content_type=MEDIA_TYPE_PLAYLIST,
+                title=title,
+                can_play=False,
+                can_expand=False,
+                children=[],
+            )
+            return library_info
     if media_content_id.startswith(CloudMusicRouter.my_daily):
         # 每日推荐
         library_info = BrowseMedia(
