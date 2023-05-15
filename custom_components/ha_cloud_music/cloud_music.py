@@ -113,8 +113,8 @@ class CloudMusic():
     # 网易云音乐接口
     async def netease_cloud_music(self, url):
         res = await http_get(self.api_url + url, self.userinfo.get('cookie', {}))
-        if res.get('code') == 301 and res.get('msg') == '需要登录':
-            self.logout()
+        if res.get('code') != 200:
+            self.notification(res.get('msg'))
         return res
 
     # 获取音乐链接
