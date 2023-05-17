@@ -202,7 +202,8 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
             },{
                 'title': '二维码登录',
                 'path': CloudMusicRouter.my_login + '?action=menu',
-                'type': MEDIA_TYPE_CHANNEL
+                'type': MEDIA_TYPE_CHANNEL,
+                'thumbnail': 'https://p1.music.126.net/kMuXXbwHbduHpLYDmHXrlA==/109951168152833223.jpg'
             }
         ])
 
@@ -293,23 +294,25 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
                     qr['url'] = res['data']['qrurl']
                     qr['time'] = now
 
-            library_info = BrowseMedia(
+            return BrowseMedia(
                 media_class=MEDIA_CLASS_DIRECTORY,
                 media_content_id=media_content_id,
                 media_content_type=MEDIA_CLASS_TRACK,
-                title=title,
+                title='APP扫码授权后，点击二维码登录',
                 can_play=False,
                 can_expand=True,
                 children=[
-                    {
-                        'title': 'APP扫码授权后，点击这里登录',
-                        'path': CloudMusicRouter.my_login + '?action=login&id=' + qr['key'],
-                        'type': MEDIA_TYPE_MUSIC,
-                        'thumbnail': f'https://cdn.dotmaui.com/qrc/?t={qr["url"]}'
-                    }
+                    BrowseMedia(
+                        title='点击检查登录',
+                        media_class=MEDIA_CLASS_DIRECTORY,
+                        media_content_type=MEDIA_TYPE_MUSIC,
+                        media_content_id=CloudMusicRouter.my_login + '?action=login&id=' + qr['key'],
+                        can_play=False,
+                        can_expand=True,
+                        thumbnail=f'https://cdn.dotmaui.com/qrc/?t={qr["url"]}'
+                    )
                 ],
             )
-            return library_info
         elif action == 'login':
             # 用户登录
             res = await cloud_music.netease_cloud_music(f'/login/qr/check?key={id}&t={int(time.time())}')
@@ -320,7 +323,7 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
             else:
                 title = f'{message}，点击返回重试'
 
-            library_info = BrowseMedia(
+            return BrowseMedia(
                 media_class=MEDIA_CLASS_DIRECTORY,
                 media_content_id=media_content_id,
                 media_content_type=MEDIA_TYPE_PLAYLIST,
@@ -329,7 +332,6 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
                 can_expand=False,
                 children=[],
             )
-            return library_info
     if media_content_id.startswith(CloudMusicRouter.my_daily):
         # 每日推荐
         library_info = BrowseMedia(

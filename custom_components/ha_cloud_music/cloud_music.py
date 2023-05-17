@@ -78,8 +78,21 @@ class CloudMusic():
 
     # 二维码登录
     async def qrcode_login(self, cookie_str):
+        '''
         s = SimpleCookie(cookie_str)
         cookie = {v.key:v.value for k,v in s.items()}
+        '''
+        arr = cookie_str.split(';')
+        cookie = {}
+        for item in arr:
+            x = item.strip()
+            if x == '' or x.startswith('Max-Age=') or x.startswith('Expires=') \
+                or x.startswith('Path=') or x.startswith('HTTPOnly'):
+                continue
+            kv = x.split('=')
+            if kv[1] != '':
+                cookie[kv[0]] = kv[1]
+
         # 设置cookie
         self.userinfo['cookie'] = cookie
         res = await self.netease_cloud_music('/user/account')
@@ -97,11 +110,11 @@ class CloudMusic():
         self.notification('用户凭据失效，请重新登录。如果多次失败，请联系插件作者')
 
     def notification(self, message, notification_id='ha_cloud_music'):
-        self.hass.services.call('persistent_notification', 'create', {
+        self.hass.async_create_task(self.hass.services.async_call('persistent_notification', 'create', {
             'title': '云音乐',
             'message': message,
             'notification_id': notification_id
-        })
+        }))
 
     # 获取播放链接
     def get_play_url(self, id, song, singer, source):
@@ -113,8 +126,16 @@ class CloudMusic():
     # 网易云音乐接口
     async def netease_cloud_music(self, url):
         res = await http_get(self.api_url + url, self.userinfo.get('cookie', {}))
-        if res.get('code') != 200:
-            self.notification(res.get('msg'))
+        code = res.get('code')
+        print(code, url)
+        if code != 200 and code != 801:
+            print(res)
+            msg = res.get('msg')
+            if msg is not None:
+                self.notification(msg)
+            elif code == 302:
+                if self.userinfo.get('uid') is not None:
+                    self.notification(f'请求数据失败，账号出现异常\n\ncode: {code} \nurl: {url} \n\n这种情况一般是接口问题，和插件没有关系')
         return res
 
     # 获取音乐链接
