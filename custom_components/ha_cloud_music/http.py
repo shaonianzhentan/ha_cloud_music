@@ -48,9 +48,11 @@ class HttpView(HomeAssistantView):
                 if url is not None:
                     # 收费音乐
                     if fee == 1:
-                        result = await cloud_music.async_music_source(song, singer)
-                        if result is not None:
-                            url = result.url
+                        url = await hass.async_add_executor_job(self.getVipMusic, id)
+                        if url is None or url == '':
+                            result = await cloud_music.async_music_source(song, singer)
+                            if result is not None:
+                                url = result.url
 
                     play_url = url
                 else:
@@ -63,8 +65,22 @@ class HttpView(HomeAssistantView):
                         if result is not None:
                             play_url = result.url
 
-        print(play_url)        
+        print(play_url)
         self.play_key = play_key
         self.play_url = play_url
         # 重定向到可播放链接
         return web.HTTPFound(play_url)
+
+    # VIP音乐资源
+    def getVipMusic(self, id):
+        try:
+            res = requests.post('https://music.dogged.cn/api.php', data={
+                'types': 'url',
+                'id': id,
+                'source': 'netease'
+            })
+            data = res.json()
+            # print(data)
+            return data.get('url')
+        except Exception as ex:
+            print(ex)

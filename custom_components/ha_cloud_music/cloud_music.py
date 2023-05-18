@@ -483,6 +483,6 @@ class CloudMusic():
         if result is not None:
             return result
 
-        result = await self.hass.async_add_executor_job(get_music2, keyword)
-        if result is not None:
-            return result
+        #result = await self.hass.async_add_executor_job(get_music2, keyword)
+        #if result is not None:
+        #    return result
