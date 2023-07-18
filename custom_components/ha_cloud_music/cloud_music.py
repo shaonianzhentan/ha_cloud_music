@@ -14,7 +14,7 @@ from .browse_media import (
     async_media_next_track
 )
 
-from .music_parser import get_music, get_music2
+from .music_parser import get_music
 
 def md5(data):
     return hashlib.md5(data.encode('utf-8')).hexdigest()
@@ -482,7 +482,3 @@ class CloudMusic():
         result = await self.hass.async_add_executor_job(get_music, keyword)
         if result is not None:
             return result
-
-        #result = await self.hass.async_add_executor_job(get_music2, keyword)
-        #if result is not None:
-        #    return result

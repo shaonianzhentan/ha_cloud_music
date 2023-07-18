@@ -1,7 +1,7 @@
 {
     "domain": "ha_cloud_music",
     "name": "\u4E91\u97F3\u4E50",
-    "version": "2023.5.18",
+    "version": "2023.7.18",
     "config_flow": true,
     "documentation": "https://github.com/shaonianzhentan/ha_cloud_music",
     "requirements": [

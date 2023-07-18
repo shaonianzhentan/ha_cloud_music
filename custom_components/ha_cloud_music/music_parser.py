@@ -40,32 +40,3 @@ def get_music(keyword):
         return MusicInfo(songId, song, singer, album, 0, audio_url, pic, MusicSource.URL.value)
   except Exception as ex:
     print(ex)
-
-def get_music2(keyword):
-  api = 'https://thewind.xyz/music/api/'
-  url = f'{api}search'
-  files = {
-      "src": (None, "KW"),
-      "keyword": (None, keyword),
-      "num": (None, 10)
-  }
-  response = requests.post(url, files=files)
-  result = response.json()
-  # print(result)
-  if len(result) > 0:
-      result = list(filter(lambda x: x.get('songId') is not None, result))
-      if len(result) > 0:
-          item = result[0]
-          albumName = item.get('albumName')
-          songSrc = item['songSrc']
-          songId = item['songId']
-          play_url = f'{api}player?shareId={songSrc}_{songId}'
-          # print(play_url)
-          response = requests.get(play_url)
-          result = response.json()
-          # print(result)
-          if isinstance(result, list) and len(result) > 0:
-              info = result[0]
-              audio_url = info.get('url', '')
-              if audio_url != '':
-                  return MusicInfo(songId, info.get('title'), info.get('author'), albumName, 0, audio_url, info.get('pic'), MusicSource.URL.value)
