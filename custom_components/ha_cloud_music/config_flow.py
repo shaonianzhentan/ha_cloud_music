@@ -12,14 +12,14 @@ from homeassistant.core import callback
 
 import os
 from .manifest import manifest
-from .http_api import http_cookie
+from .http_api import fetch_data
 from homeassistant.util.json import save_json
 
 DOMAIN = manifest.domain
 
 class SimpleConfigFlow(ConfigFlow, domain=DOMAIN):
 
-    VERSION = 1
+    VERSION = 2
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
@@ -30,8 +30,15 @@ class SimpleConfigFlow(ConfigFlow, domain=DOMAIN):
         errors = {}
         if user_input is not None:
             url = user_input.get(CONF_URL).strip('/')
-            user_input[CONF_URL] = url
-            return self.async_create_entry(title=DOMAIN, data=user_input)
+            # 检查接口是否可用
+            try:
+                res =  await fetch_data(f'{url}/login/status')
+                if res['data']['code'] == 200:
+                    user_input[CONF_URL] = url
+                    return self.async_create_entry(title=DOMAIN, data=user_input)
+            except Exception as ex:
+                print(ex)
+                errors = { 'base': 'api_failed' }
         else:
             user_input = {}
 
@@ -45,7 +52,6 @@ class SimpleConfigFlow(ConfigFlow, domain=DOMAIN):
     def async_get_options_flow(entry: ConfigEntry):
         return OptionsFlowHandler(entry)
 
-
 class OptionsFlowHandler(OptionsFlow):
     def __init__(self, config_entry: ConfigEntry):
         self.config_entry = config_entry
@@ -57,20 +63,22 @@ class OptionsFlowHandler(OptionsFlow):
         options = self.config_entry.options
         errors = {}
         if user_input is not None:
-            username = user_input.get(CONF_USERNAME)
-            password = user_input.get(CONF_PASSWORD)
+            return self.async_create_entry(title='', data=user_input)
+        
+        media_states = self.hass.states.async_all('media_player')
+        media_entities = {}
 
-            cloud_music = self.hass.data['cloud_music']
+        for state in media_states:
+            friendly_name = state.attributes.get('friendly_name')
+            platform = state.attributes.get('platform')
+            entity_id = state.entity_id
+            value = f'{friendly_name}（{entity_id}）'
 
-            result = await cloud_music.login(username, password)
-            if result is not None:
-                return self.async_create_entry(title='', data=user_input)
-            else:
-                errors['base'] = 'login_failed'
+            if platform != 'cloud_music':
+                media_entities[entity_id] = value
 
         DATA_SCHEMA = vol.Schema({
-            vol.Required(CONF_USERNAME, default=options.get(CONF_USERNAME)): str,
-            vol.Required(CONF_PASSWORD, default=options.get(CONF_PASSWORD)): str
+            vol.Required('media_player', default=options.get('media_player')): vol.In(media_entities)
         })
         return self.async_show_form(step_id="user", data_schema=DATA_SCHEMA, errors=errors)
         

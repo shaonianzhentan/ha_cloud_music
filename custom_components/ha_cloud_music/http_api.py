@@ -24,7 +24,6 @@ async def http_cookie(url):
                 }
 
 async def http_get(url, COOKIES={}):
-    print(url)
     headers = {'Referer': url, **HEADERS}
     jar = aiohttp.CookieJar(unsafe=True)
     async with aiohttp.ClientSession(headers=headers, cookies=COOKIES, cookie_jar=jar) as session:
@@ -40,3 +39,9 @@ async def http_code(url):
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
             return response.status
+
+async def fetch_data(url):
+    timeout = aiohttp.ClientTimeout(total=5)
+    async with aiohttp.ClientSession(timeout=timeout) as session:
+        async with session.get(url) as response:
+            return await response.json()
