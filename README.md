@@ -49,6 +49,7 @@ https://github.com/Binaryify/NeteaseCloudMusicApi
 
 > **登录后播放**
 - [x] 每日推荐 `cloudmusic://163/my/daily`
+- [x] 我喜欢的音乐 `cloudmusic://163/my/ilike`
 
 
 

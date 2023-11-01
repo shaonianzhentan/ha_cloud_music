@@ -258,6 +258,13 @@ class CloudMusic():
 
         return list(map(format_playlist, res['data']['dailySongs']))
 
+    # 获取我喜欢的音乐
+    async def async_get_ilinkSongs(self):
+        uid = self.userinfo.get('uid')
+        if uid is not None:
+            res = await self.netease_cloud_music(f'/user/playlist?uid={uid}')
+            return await self.async_get_playlist(res['playlist'][0]['id'])
+
     # 乐听头条
     async def async_ting_playlist(self, catalog_id):
         
