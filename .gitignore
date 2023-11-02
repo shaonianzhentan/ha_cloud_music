@@ -128,4 +128,8 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+<<<<<<< HEAD
 .vscode/
+=======
+.vscode/
+>>>>>>> dev

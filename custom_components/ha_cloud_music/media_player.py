@@ -13,7 +13,6 @@ from homeassistant.components.media_player.const import (
     SUPPORT_VOLUME_SET,
     SUPPORT_VOLUME_MUTE,
     SUPPORT_SELECT_SOURCE,
-    SUPPORT_SELECT_SOUND_MODE,
     SUPPORT_PLAY_MEDIA,
     SUPPORT_PLAY,
     SUPPORT_PAUSE,
@@ -51,7 +50,6 @@ DOMAIN = manifest.domain
 _LOGGER = logging.getLogger(__name__)
 
 SUPPORT_FEATURES = SUPPORT_VOLUME_STEP | SUPPORT_VOLUME_MUTE | SUPPORT_VOLUME_SET | \
-    SUPPORT_SELECT_SOURCE | SUPPORT_SELECT_SOUND_MODE | \
     SUPPORT_PLAY_MEDIA | SUPPORT_PLAY | SUPPORT_PAUSE | SUPPORT_PREVIOUS_TRACK | SUPPORT_NEXT_TRACK | \
     SUPPORT_BROWSE_MEDIA | SUPPORT_SEEK | SUPPORT_CLEAR_PLAYLIST | SUPPORT_SHUFFLE_SET | SUPPORT_REPEAT_SET
 
@@ -63,14 +61,14 @@ async def async_setup_entry(
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:    
-    media_player = CloudMusicMediaPlayer(hass)
+    media_player = CloudMusicMediaPlayer(hass, entry)
 
     await hass.async_add_executor_job(track_time_interval, hass, media_player.interval, TIME_BETWEEN_UPDATES)
     async_add_entities([ media_player ], True)
 
 class CloudMusicMediaPlayer(MediaPlayerEntity):
 
-    def __init__(self, hass):
+    def __init__(self, hass, entry):
         self.hass = hass
         self._attributes = {
             'platform': 'cloud_music'
@@ -81,9 +79,7 @@ class CloudMusicMediaPlayer(MediaPlayerEntity):
         self._attr_supported_features = SUPPORT_FEATURES
 
         # default attribute
-        self._attr_source_list = []
-        self._attr_sound_mode = None
-        self._attr_sound_mode_list = []
+        self.source_media_player = entry.options.get('media_player')
         self._attr_name = manifest.name
         self._attr_unique_id = manifest.documentation
         self._attr_state =  STATE_ON
@@ -140,8 +136,8 @@ class CloudMusicMediaPlayer(MediaPlayerEntity):
 
     @property
     def media_player(self):
-        if self.entity_id is not None and self._attr_sound_mode is not None:
-            return self.hass.states.get(self._attr_sound_mode)
+        if self.entity_id is not None and self.source_media_player is not None:
+            return self.hass.states.get(self.source_media_player)
 
     @property
     def device_info(self):
@@ -161,15 +157,6 @@ class CloudMusicMediaPlayer(MediaPlayerEntity):
 
     async def async_browse_media(self, media_content_type=None, media_content_id=None):
         return await self.cloud_music.async_browse_media(self, media_content_type, media_content_id)
-
-    async def async_select_source(self, source):
-        if self._attr_source_list.count(source) > 0:
-            self._attr_source = source
-
-    async def async_select_sound_mode(self, sound_mode):
-        if self._attr_sound_mode_list.count(sound_mode) > 0:
-            await self.async_media_pause()
-            self._attr_sound_mode = sound_mode
 
     async def async_volume_up(self):
         await self.async_call('volume_up')
@@ -240,18 +227,7 @@ class CloudMusicMediaPlayer(MediaPlayerEntity):
 
     # 更新属性
     async def async_update(self):
-        if self.entity_id is not None:
-            state = self.hass.states.get(self.entity_id)
-            entities = state.attributes.get('media_player')
-            if entities is not None:
-                # 兼容初版
-                if isinstance(entities, str):
-                    entities = [ entities ]
-
-                if len(entities) > 0:
-                    self._attr_sound_mode_list = entities
-                    if self._attr_sound_mode is None:
-                        self._attr_sound_mode = entities[0]
+        pass
 
     # 调用服务
     async def async_call(self, service, service_data={}):

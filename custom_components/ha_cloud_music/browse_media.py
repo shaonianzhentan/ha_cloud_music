@@ -86,6 +86,7 @@ class CloudMusicRouter():
 
     my_login = f'{cloudmusic_protocol}my/login'
     my_daily = f'{cloudmusic_protocol}my/daily'
+    my_ilike = f'{cloudmusic_protocol}my/ilike'
     my_recommend_resource = f'{cloudmusic_protocol}my/recommend_resource'
     my_cloud = f'{cloudmusic_protocol}my/cloud'
     my_created = f'{cloudmusic_protocol}my/created'
@@ -762,6 +763,8 @@ async def async_play_media(media_player, cloud_music, media_content_id):
         playlist = await cloud_music.async_get_playlist(id)
     elif media_content_id.startswith(CloudMusicRouter.my_daily):
         playlist = await cloud_music.async_get_dailySongs()
+    elif media_content_id.startswith(CloudMusicRouter.my_ilike):
+        playlist = await cloud_music.async_get_ilinkSongs()
     elif media_content_id.startswith(CloudMusicRouter.my_cloud):
         playlist = await cloud_music.async_get_cloud()
     elif media_content_id.startswith(CloudMusicRouter.artist_playlist):

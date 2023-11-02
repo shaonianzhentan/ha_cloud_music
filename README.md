@@ -26,6 +26,8 @@ https://github.com/Binaryify/NeteaseCloudMusicApi
 
 不想动手不想操心，也可以付费使用由我部署维护的接口服务（每年30）
 
+**注意：关联媒体播放器调整为在集成选项中选择**
+
 ## 使用 - [插件图片预览](https://github.com/shaonianzhentan/image/blob/main/ha_cloud_music/README.md)
 
 > **指定ID播放**
@@ -47,21 +49,10 @@ https://github.com/Binaryify/NeteaseCloudMusicApi
 
 > **登录后播放**
 - [x] 每日推荐 `cloudmusic://163/my/daily`
+- [x] 我喜欢的音乐 `cloudmusic://163/my/ilike`
 
-configuration.yaml
-```yaml
-homeassistant:
-  customize: !include customize.yaml
-```
 
-customize.yaml
-```yaml
-media_player.yun_yin_le:
-  media_player: 
-    - media_player.源实体1
-    - media_player.源实体2
-    - media_player.源实体3
-```
+
 
 ## 关联项目
 
@@ -74,4 +65,4 @@ media_player.yun_yin_le:
 <img src="https://ha.jiluxinqing.com/img/alipay.png" align="left" height="160" width="160" alt="支付宝" title="支付宝">  |  <img src="https://ha.jiluxinqing.com/img/wechat.png" align="left" height="160" width="160" alt="微信支付" title="微信">
 
 #### 关注我的微信订阅号，了解更多HomeAssistant相关知识
-<img src="https://ha.jiluxinqing.com/img/wechat-channel.png" height="160" alt="HomeAssistant家庭助理" title="HomeAssistant家庭助理"> 
+<img src="https://ha.jiluxinqing.com/img/wechat-channel.png" height="160" alt="HomeAssistant家庭助理" title="HomeAssistant家庭助理">
