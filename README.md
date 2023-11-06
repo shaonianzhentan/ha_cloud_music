@@ -51,9 +51,6 @@ https://github.com/Binaryify/NeteaseCloudMusicApi
 - [x] 每日推荐 `cloudmusic://163/my/daily`
 - [x] 我喜欢的音乐 `cloudmusic://163/my/ilike`
 
-
-
-
 ## 关联项目
 
 - https://github.com/shaonianzhentan/cloud_music_mpd
