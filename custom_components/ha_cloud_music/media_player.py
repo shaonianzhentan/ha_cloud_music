@@ -60,15 +60,22 @@ async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
-) -> None:    
-    media_player = CloudMusicMediaPlayer(hass, entry)
+) -> None:
 
-    await hass.async_add_executor_job(track_time_interval, hass, media_player.interval, TIME_BETWEEN_UPDATES)
-    async_add_entities([ media_player ], True)
+    entities = []
+    for source_media_player in entry.options.get('media_player'):
+      entities.append(CloudMusicMediaPlayer(hass, source_media_player))
+
+    def media_player_interval(now):
+      for mp in entities:
+        mp.interval(now)
+
+    await hass.async_add_executor_job(track_time_interval, hass, media_player_interval, TIME_BETWEEN_UPDATES)
+    async_add_entities(entities, True)
 
 class CloudMusicMediaPlayer(MediaPlayerEntity):
 
-    def __init__(self, hass, entry):
+    def __init__(self, hass, source_media_player):
         self.hass = hass
         self._attributes = {
             'platform': 'cloud_music'
@@ -79,9 +86,9 @@ class CloudMusicMediaPlayer(MediaPlayerEntity):
         self._attr_supported_features = SUPPORT_FEATURES
 
         # default attribute
-        self.source_media_player = entry.options.get('media_player')
-        self._attr_name = manifest.name
-        self._attr_unique_id = manifest.documentation
+        self.source_media_player = source_media_player
+        self._attr_name = f'{manifest.name} {source_media_player.split(".")[1]}'
+        self._attr_unique_id = f'{manifest.domain}{source_media_player}'
         self._attr_state =  STATE_ON
         self._attr_volume_level = 1
         self._attr_repeat = 'all'
