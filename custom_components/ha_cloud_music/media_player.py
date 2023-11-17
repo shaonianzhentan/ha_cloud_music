@@ -3,7 +3,7 @@ import logging, time, datetime
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.helpers.event import track_time_interval
+from homeassistant.helpers.event import async_track_time_interval
 from homeassistant.components.media_player import MediaPlayerEntity, MediaPlayerDeviceClass
 from homeassistant.components.media_player.const import (
     SUPPORT_BROWSE_MEDIA,
@@ -55,6 +55,7 @@ SUPPORT_FEATURES = SUPPORT_VOLUME_STEP | SUPPORT_VOLUME_MUTE | SUPPORT_VOLUME_SE
 
 # 定时器时间
 TIME_BETWEEN_UPDATES = datetime.timedelta(seconds=2)
+UNSUB_INTERVAL = None
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -63,14 +64,19 @@ async def async_setup_entry(
 ) -> None:
 
     entities = []
-    for source_media_player in entry.options.get('media_player'):
+    for source_media_player in entry.options.get('media_player', []):
       entities.append(CloudMusicMediaPlayer(hass, source_media_player))
 
     def media_player_interval(now):
       for mp in entities:
         mp.interval(now)
 
-    await hass.async_add_executor_job(track_time_interval, hass, media_player_interval, TIME_BETWEEN_UPDATES)
+    # 开启定时器
+    global UNSUB_INTERVAL
+    if UNSUB_INTERVAL is not None:
+      UNSUB_INTERVAL()
+    UNSUB_INTERVAL = async_track_time_interval(hass, media_player_interval, TIME_BETWEEN_UPDATES)
+
     async_add_entities(entities, True)
 
 class CloudMusicMediaPlayer(MediaPlayerEntity):

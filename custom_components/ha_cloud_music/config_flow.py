@@ -73,7 +73,7 @@ class OptionsFlowHandler(OptionsFlow):
             entity_id = state.entity_id
             value = f'{friendly_name}（{entity_id}）'
 
-            if platform != 'cloud_music':
+            if platform != 'cloud_music' and state.state != 'unavailable':
                 media_entities.append({ 'label': value, 'value': entity_id })
 
         DATA_SCHEMA = vol.Schema({
