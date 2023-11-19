@@ -178,7 +178,8 @@ class CloudMusicMediaPlayer(MediaPlayerEntity):
         await self.async_call('volume_down')
 
     async def async_mute_volume(self, mute):
-        await self.async_call('mute_volume', { 'mute': mute })
+        self._attr_is_volume_muted = mute
+        await self.async_call('mute_volume', { 'is_volume_muted': mute })
 
     async def async_set_volume_level(self, volume: float):
         self._attr_volume_level = volume
