@@ -1,5 +1,4 @@
-import os
-import json
+import base64
 import requests
 from urllib.parse import parse_qsl, quote
 from homeassistant.components.http import HomeAssistantView
@@ -8,7 +7,6 @@ from .models.music_info import MusicSource
 from .manifest import manifest
 
 DOMAIN = manifest.domain
-
 
 class HttpView(HomeAssistantView):
 
@@ -20,21 +18,27 @@ class HttpView(HomeAssistantView):
     play_url = None
 
     async def get(self, request):
+
         hass = request.app["hass"]
         cloud_music = hass.data['cloud_music']
 
-        query = request.query
+        query = {}
+        data = request.query.get('data')
+        if data is not None:
+            decoded_data = base64.b64decode(data).decode('utf-8')
+            qsl = parse_qsl(decoded_data)
+            for q in qsl:
+                query[q[0]] = q[1]
+
         print(query)
+
         id = query.get('id')
         source = query.get('source')
         song = query.get('song')
         singer = query.get('singer')
 
         not_found_tips = quote(f'当前没有找到编号是{id}，歌名为{song}，作者是{singer}的播放链接')
-        play_url = f'https://fanyi.baidu.com/gettts?lan=zh&text={not_found_tips}&spd=5&source=web'
-
-        if id is None or source is None:
-            return web.HTTPFound(play_url)
+        play_url = f'http://fanyi.baidu.com/gettts?lan=zh&text={not_found_tips}&spd=5&source=web'
 
         # 缓存KEY
         play_key = f'{id}{song}{singer}{source}'
@@ -70,14 +74,9 @@ class HttpView(HomeAssistantView):
 
         print(play_url)
         self.play_key = play_key
-        self.play_url = play_url
+        self.play_url = play_url     
         # 重定向到可播放链接
-        response = web.HTTPFound(play_url, headers={
-            'Content-Length': 0,
-            'Cache-Control': 'no-cache, no-store, keep-alive=timeout=4'
-        })
-        response.remove_header('Content-Type')
-        return response
+        return web.HTTPFound(play_url)
 
     # VIP音乐资源
     def getVipMusic(self, id):
