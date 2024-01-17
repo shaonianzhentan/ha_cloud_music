@@ -21,7 +21,6 @@ class HttpView(HomeAssistantView):
         cloud_music = hass.data['cloud_music']
 
         query = request.query
-        print(query)
         id = query.get('id')
         source = query.get('source')
         song = query.get('song')
@@ -65,7 +64,6 @@ class HttpView(HomeAssistantView):
                         if result is not None:
                             play_url = result.url
 
-        print(play_url)
         self.play_key = play_key
         self.play_url = play_url
         # 重定向到可播放链接
@@ -80,7 +78,6 @@ class HttpView(HomeAssistantView):
                 'source': 'netease'
             })
             data = res.json()
-            # print(data)
             return data.get('url')
         except Exception as ex:
-            print(ex)
+            pass

@@ -73,8 +73,6 @@ class CloudMusic():
             }
             save_json(self.userinfo_filepath, self.userinfo)
             return res_data
-        else:
-            print(res_data)
 
     # 二维码登录
     async def qrcode_login(self, cookie_str):
@@ -127,9 +125,7 @@ class CloudMusic():
     async def netease_cloud_music(self, url):
         res = await http_get(self.api_url + url, self.userinfo.get('cookie', {}))
         code = res.get('code')
-        print(code, url)
         if code != 200 and code != 801:
-            print(res)
             msg = res.get('msg')
             if msg is not None:
                 self.notification(msg)

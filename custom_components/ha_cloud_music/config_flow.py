@@ -35,8 +35,7 @@ class SimpleConfigFlow(ConfigFlow, domain=DOMAIN):
                 if res['data']['code'] == 200:
                     user_input[CONF_URL] = url
                     return self.async_create_entry(title=DOMAIN, data=user_input)
-            except Exception as ex:
-                print(ex)
+            except Exception as ex:                
                 errors = { 'base': 'api_failed' }
         else:
             user_input = {}

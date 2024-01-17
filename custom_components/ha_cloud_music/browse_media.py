@@ -119,7 +119,6 @@ class CloudMusicRouter():
 
 
 async def async_browse_media(media_player, media_content_type, media_content_id):
-    print(media_content_type, media_content_id)
     hass = media_player.hass
     cloud_music = hass.data['cloud_music']
 
@@ -730,7 +729,6 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
 
 ''' ==================  播放音乐 ================== '''
 async def async_play_media(media_player, cloud_music, media_content_id):
-    print(media_content_id)
     hass = media_player.hass
     # 媒体库
     if media_source.is_media_source_id(media_content_id):
