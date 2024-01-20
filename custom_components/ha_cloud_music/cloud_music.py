@@ -156,7 +156,7 @@ class CloudMusic():
 
     # 获取歌单列表
     async def async_get_playlist(self, playlist_id):
-        res = await self.netease_cloud_music(f'/playlist/track/all?id={playlist_id}')
+        res = await self.netease_cloud_music(f'/playlist/track/all?id={playlist_id}&limit=1000')
 
         def format_playlist(item):
             id = item['id']
