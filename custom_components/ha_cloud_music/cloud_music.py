@@ -8,9 +8,9 @@ from homeassistant.util.json import load_json, save_json
 from http.cookies import SimpleCookie
 
 from .browse_media import (
-    async_browse_media, 
-    async_play_media, 
-    async_media_previous_track, 
+    async_browse_media,
+    async_play_media,
+    async_media_previous_track,
     async_media_next_track
 )
 
@@ -119,7 +119,7 @@ class CloudMusic():
         base_url = get_url(self.hass, prefer_external=True)
         if singer is None:
             singer = ''
-        
+
         encoded_data = base64.b64encode(f'id={id}&song={quote(song)}&singer={quote(singer)}&source={source}'.encode('utf-8'))
         url_encoded_data = quote(encoded_data.decode('utf-8'), safe='-_')
         return f'{base_url}/cloud_music/url?data={url_encoded_data}'
@@ -159,7 +159,18 @@ class CloudMusic():
 
     # 获取歌单列表
     async def async_get_playlist(self, playlist_id):
-        res = await self.netease_cloud_music(f'/playlist/track/all?id={playlist_id}&limit=1000')
+        limit = 1000
+        offset = 0
+        songs = []
+
+        while True:
+            res = await self.netease_cloud_music(f'/playlist/track/all?id={playlist_id}&limit={limit}&offset={offset}')
+            song = res.get('songs', [])
+            songs.extend(song)
+
+            if len(song) < limit:
+                break  # 如果返回的歌曲数少于limit，则说明已经获取完所有歌曲
+            offset += limit
 
         def format_playlist(item):
             id = item['id']
@@ -172,7 +183,8 @@ class CloudMusic():
             music_info = MusicInfo(id, song, singer, album, duration, url, picUrl, MusicSource.PLAYLIST.value)
             return music_info
 
-        return list(map(format_playlist, res['songs']))
+        return list(map(format_playlist, songs))
+
 
     # 获取电台列表
     async def async_get_djradio(self, rid):
@@ -189,7 +201,7 @@ class CloudMusic():
             picUrl = item['coverUrl']
             music_info = MusicInfo(id, song, singer, album, duration, url, picUrl, MusicSource.DJRADIO.value)
             return music_info
-        
+
         return list(map(format_playlist, res['programs']))
 
     # 获取歌手列表
@@ -206,7 +218,7 @@ class CloudMusic():
             picUrl = res['artist']['picUrl']
             music_info = MusicInfo(id, song, singer, album, duration, url, picUrl, MusicSource.ARTISTS.value)
             return music_info
-        
+
         return list(map(format_playlist, res['hotSongs']))
 
     # 获取云盘音乐
@@ -216,7 +228,7 @@ class CloudMusic():
             id = item['songId']
             song = ''
             singer = ''
-            duration = ''            
+            duration = ''
             album = ''
             picUrl = 'http://p3.music.126.net/ik8RFcDiRNSV2wvmTnrcbA==/3435973851857038.jpg'
 
@@ -248,7 +260,7 @@ class CloudMusic():
             id = item['id']
             song = item['name']
             singer = item['ar'][0]['name']
-            album = item['al']['name'] 
+            album = item['al']['name']
             duration = item['dt']
             url = self.get_play_url(id, song, singer, MusicSource.PLAYLIST.value)
             picUrl = item['al'].get('picUrl', 'https://p2.music.126.net/fL9ORyu0e777lppGU3D89A==/109951167206009876.jpg')
@@ -266,7 +278,7 @@ class CloudMusic():
 
     # 乐听头条
     async def async_ting_playlist(self, catalog_id):
-        
+
         now = int(time.time())
         if hasattr(self, 'letingtoutiao') == False:
             uid = uuid.uuid4().hex
@@ -279,8 +291,8 @@ class CloudMusic():
         async with aiohttp.ClientSession() as session:
             # 获取token
             if headers['token'] == '' or now > self.letingtoutiao['time']:
-                async with session.get('https://app.leting.io/app/auth?uid=' + 
-                    uid + '&appid=a435325b8662a4098f615a7d067fe7b8&ts=1628297581496&sign=4149682cf40c2bf2efcec8155c48b627&v=v9&channel=huawei', 
+                async with session.get('https://app.leting.io/app/auth?uid=' +
+                    uid + '&appid=a435325b8662a4098f615a7d067fe7b8&ts=1628297581496&sign=4149682cf40c2bf2efcec8155c48b627&v=v9&channel=huawei',
                     headers=headers) as res:
                     r = await res.json()
                     token = r['data']['token']
@@ -290,7 +302,7 @@ class CloudMusic():
                     self.letingtoutiao['headers']['token'] = token
 
             # 获取播放列表
-            async with session.get('https://app.leting.io/app/url/channel?catalog_id=' + 
+            async with session.get('https://app.leting.io/app/url/channel?catalog_id=' +
                 catalog_id + '&size=100&distinct=1&v=v8&channel=xiaomi', headers=headers) as res:
                 r = await res.json()
 
@@ -361,7 +373,7 @@ class CloudMusic():
 
     # 搜索音乐播放
     async def async_play_song(self, name):
-        
+
         if '周杰伦' in name:
             result = await self.async_music_source(name)
             if result is not None:
@@ -369,7 +381,7 @@ class CloudMusic():
 
         res = await self.netease_cloud_music(f'/cloudsearch?limit=1&keywords={name}')
         if res['code'] == 200:
-            
+
             songs = res['result']['songs']
             if len(songs) > 0:
                 item = songs[0]
@@ -385,7 +397,7 @@ class CloudMusic():
                 duration = item.get('dt')
 
                 url = self.get_play_url(id, song, singer, MusicSource.PLAYLIST.value)
-                
+
                 music_info = MusicInfo(id, song, singer, album, duration, url, picUrl, MusicSource.URL.value)
                 return [ music_info ]
 
