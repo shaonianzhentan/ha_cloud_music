@@ -5,6 +5,7 @@ from urllib.parse import urlparse, parse_qs, parse_qsl, quote
 from homeassistant.util.json import save_json
 from custom_components.ha_cloud_music.http_api import http_get
 from .utils import parse_query
+from .models.music_info import MusicInfo, MusicSource
 
 from homeassistant.components import media_source
 from homeassistant.components.media_player import (
@@ -115,7 +116,7 @@ class CloudMusicRouter():
     play_radio = f'{play_protocol}radio'
     play_xmly = f'{play_protocol}xmly'
     play_fm = f'{play_protocol}fm'
-    
+    play_url = f'{play_protocol}url'
 
 
 async def async_browse_media(media_player, media_content_type, media_content_id):
@@ -185,8 +186,8 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
                     #'thumbnail': 'http://p1.music.126.net/9M-U5gX1gccbuBXZ6JnTUg==/109951165264087991.jpg'
                 }
             ])
-            
-            
+
+
 
         # 扩展资源
         children.extend([
@@ -697,7 +698,7 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
         return library_info
 
     if media_content_id.startswith(CloudMusicRouter.fm_playlist):
-        
+
         library_info = BrowseMedia(
             media_class=MEDIA_CLASS_DIRECTORY,
             media_content_id=media_content_id,
@@ -724,7 +725,7 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
 
     #================= 喜马拉雅
 
-    
+
 
 
 ''' ==================  播放音乐 ================== '''
@@ -795,7 +796,24 @@ async def async_play_media(media_player, cloud_music, media_content_id):
         playlist = await cloud_music.async_play_radio(keywords)
     elif media_content_id.startswith(CloudMusicRouter.play_singer):
         playlist = await cloud_music.async_play_singer(keywords)
-        
+
+        ##播放指定URL
+    elif media_content_id.startswith(CloudMusicRouter.play_url):
+        id = '1'
+        url = urlparse(media_content_id)
+        query = parse_query(url.query)
+        song = query.get('song')
+        singer = query.get('singer')
+        album = song
+        duration = '1000000000'
+        url = query.get('url')
+        picUrl = query.get('picurl')  # 提取缩略图URL
+
+
+        if url is not None:
+            media_player.playlist = [ MusicInfo(id, song, singer, album, duration, url, picUrl, MusicSource.URL.value) ]
+            media_player.playindex = 0
+            return 'playlist'
 
     if playlist is not None:
         media_player.playindex = playindex
