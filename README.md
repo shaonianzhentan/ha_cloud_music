@@ -37,6 +37,9 @@ https://github.com/Binaryify/NeteaseCloudMusicApi
 - 播放网易云音乐歌手 `cloudmusic://163/artist/playlist?id=2116`
 - 播放喜马拉雅专辑 `cloudmusic://xmly/playlist?id=258244`
 
+> **指定URL播放**
+- [x] `cloudmusic://play/url?url=流媒体链接&song=歌曲名&singer=歌手&picurl=缩略图链接`
+
 > **搜索播放**
 
 - [x] 音乐搜索播放 `cloudmusic://play/song?kv=关键词`
