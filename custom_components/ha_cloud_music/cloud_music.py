@@ -108,7 +108,7 @@ class CloudMusic():
         self.notification('用户凭据失效，请重新登录。如果多次失败，请联系插件作者')
 
     def notification(self, message, notification_id='ha_cloud_music'):
-        self.hass.async_create_task(self.hass.services.async_call('persistent_notification', 'create', {
+        self.hass.create_task(self.hass.services.async_call('persistent_notification', 'create', {
             'title': '云音乐',
             'message': message,
             'notification_id': notification_id
