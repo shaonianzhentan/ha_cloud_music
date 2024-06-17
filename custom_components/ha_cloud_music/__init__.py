@@ -3,6 +3,7 @@ from homeassistant.core import HomeAssistant
 import homeassistant.helpers.config_validation as cv
 from homeassistant.const import CONF_URL
 
+import asyncio
 from .const import PLATFORMS
 from .manifest import manifest
 from .http import HttpView
@@ -25,6 +26,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 async def update_listener(hass, entry):
     await async_unload_entry(hass, entry)
+    await asyncio.sleep(1)
     await async_setup_entry(hass, entry)
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
