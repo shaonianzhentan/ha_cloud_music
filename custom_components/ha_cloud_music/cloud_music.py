@@ -414,7 +414,7 @@ class CloudMusic():
     async def async_play_xmly(self, keywords):
         _list = await self.async_search_xmly(keywords)
         if len(_list) > 0:
-            return await self.async_xmly_playlist(_list[0]['id'], 100)
+            return await self.async_xmly_playlist(_list[0]['id'], 1, 100)
 
     # 音乐搜索
     async def async_search_song(self, name):

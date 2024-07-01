@@ -43,7 +43,7 @@ https://github.com/Binaryify/NeteaseCloudMusicApi
 - [x] 歌手搜索播放 `cloudmusic://play/singer?kv=关键词`
 - [x] 歌单搜索播放 `cloudmusic://play/list?kv=关键词`
 - [x] 电台搜索播放 `cloudmusic://play/radio?kv=关键词`
-- [ ] 喜马拉雅搜索播放 `cloudmusic://play/xmly?kv=关键词`
+- [x] 喜马拉雅搜索播放 `cloudmusic://play/xmly?kv=关键词`
 - [ ] FM搜索播放 `cloudmusic://play/fm?kv=关键词`
 - [x] （不推荐）第三方音乐搜索播放 `cloudmusic://search/play?kv=关键词`
 
