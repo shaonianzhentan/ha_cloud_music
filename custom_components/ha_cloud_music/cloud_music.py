@@ -1,4 +1,4 @@
-import uuid, time, logging, os, hashlib, aiohttp, requests
+import uuid, time, logging, os, hashlib, aiohttp, requests, base64
 from urllib.parse import quote
 from homeassistant.helpers.network import get_url
 from .http_api import http_get, http_cookie
@@ -119,7 +119,10 @@ class CloudMusic():
         base_url = get_url(self.hass, prefer_external=True)
         if singer is None:
             singer = ''
-        return f'{base_url}/cloud_music/url?id={id}&song={quote(song)}&singer={quote(singer)}&source={source}'
+
+        encoded_data = base64.b64encode(f'id={id}&song={quote(song)}&singer={quote(singer)}&source={source}'.encode('utf-8'))
+        url_encoded_data = quote(encoded_data.decode('utf-8'), safe='-_')
+        return f'{base_url}/cloud_music/url?data={url_encoded_data}'
 
     # 网易云音乐接口
     async def netease_cloud_music(self, url):
