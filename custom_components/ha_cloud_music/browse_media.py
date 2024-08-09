@@ -2,7 +2,7 @@
 from enum import Enum
 import logging, os, random, time
 from urllib.parse import urlparse, parse_qs, parse_qsl, quote
-from homeassistant.util.json import save_json
+from homeassistant.helpers.json import save_json
 from custom_components.ha_cloud_music.http_api import http_get
 from .utils import parse_query
 

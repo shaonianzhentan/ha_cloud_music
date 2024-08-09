@@ -4,7 +4,8 @@ from homeassistant.helpers.network import get_url
 from .http_api import http_get, http_cookie
 from .models.music_info import MusicInfo, MusicSource
 from homeassistant.helpers.storage import STORAGE_DIR
-from homeassistant.util.json import load_json, save_json
+from homeassistant.util.json import load_json
+from homeassistant.helpers.json import save_json
 from http.cookies import SimpleCookie
 
 from .browse_media import (
