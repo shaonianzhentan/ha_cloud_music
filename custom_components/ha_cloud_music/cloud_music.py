@@ -1,10 +1,11 @@
-import uuid, time, logging, os, hashlib, aiohttp, base64
+import uuid, time, logging, os, hashlib, aiohttp, requests, base64
 from urllib.parse import quote
 from homeassistant.helpers.network import get_url
 from .http_api import http_get, http_cookie
 from .models.music_info import MusicInfo, MusicSource
 from homeassistant.helpers.storage import STORAGE_DIR
-from homeassistant.util.json import load_json, save_json
+from homeassistant.util.json import load_json
+from homeassistant.helpers.json import save_json
 from http.cookies import SimpleCookie
 
 from .browse_media import (
@@ -119,7 +120,6 @@ class CloudMusic():
         base_url = get_url(self.hass, prefer_external=True)
         if singer is None:
             singer = ''
-        
         encoded_data = base64.b64encode(f'id={id}&song={quote(song)}&singer={quote(singer)}&source={source}'.encode('utf-8'))
         url_encoded_data = quote(encoded_data.decode('utf-8'), safe='-_')
         return f'{base_url}/cloud_music/url?data={url_encoded_data}'
@@ -412,6 +412,12 @@ class CloudMusic():
         if res['code'] == 200:
             playlists = res['result']['djRadios']
             return await self.async_get_djradio(playlists[0]['id'])
+
+    # 喜马拉雅专辑
+    async def async_play_xmly(self, keywords):
+        _list = await self.async_search_xmly(keywords)
+        if len(_list) > 0:
+            return await self.async_xmly_playlist(_list[0]['id'], 1, 100)
 
     # 音乐搜索
     async def async_search_song(self, name):

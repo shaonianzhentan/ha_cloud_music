@@ -2,7 +2,7 @@
 from enum import Enum
 import logging, os, random, time
 from urllib.parse import urlparse, parse_qs, parse_qsl, quote
-from homeassistant.util.json import save_json
+from homeassistant.helpers.json import save_json
 from custom_components.ha_cloud_music.http_api import http_get
 from .utils import parse_query
 
@@ -795,7 +795,8 @@ async def async_play_media(media_player, cloud_music, media_content_id):
         playlist = await cloud_music.async_play_radio(keywords)
     elif media_content_id.startswith(CloudMusicRouter.play_singer):
         playlist = await cloud_music.async_play_singer(keywords)
-        
+    elif media_content_id.startswith(CloudMusicRouter.play_xmly):
+        playlist = await cloud_music.async_play_xmly(keywords)
 
     if playlist is not None:
         media_player.playindex = playindex
