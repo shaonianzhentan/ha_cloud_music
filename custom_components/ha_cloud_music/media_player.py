@@ -132,8 +132,8 @@ class CloudMusicMediaPlayer(MediaPlayerEntity):
                         return
 
             self.before_state = {
-                'media_position': self._attr_media_position,
-                'media_duration': self._attr_media_duration,
+                'media_position': int(self._attr_media_position),
+                'media_duration': int(self._attr_media_duration),
                 'state': self.current_state
             }
             self.current_state = media_player.state
