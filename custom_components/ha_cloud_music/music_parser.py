@@ -3,13 +3,11 @@ import requests
 import re
 from .models.music_info import MusicInfo, MusicSource
 
-
 def get_last_part(path):
     last_slash_index = path.rfind('/')
     if last_slash_index != -1:
         return path[last_slash_index + 1:]
     return path
-
 
 def get_music(keyword):
     # https://www.gequbao.com
@@ -39,7 +37,14 @@ def get_music(keyword):
 
             songId = get_last_part(href)
             album = ''
-            audio_url = f'https://www.fangpi.net/api/play_url?id={songId}'
-            return MusicInfo(songId, song, singer, album, 0, audio_url, pic, MusicSource.URL.value)
+            # 音乐链接
+            pattern = r"window.play_id = '(.*?)';"
+            match = re.search(pattern, html)
+            if match:
+                response = session.post(f'{api}/api/play-url', data={'id': match.group(1)})
+                data = response.json()
+                if data.get('code') == 1:
+                    audio_url = data['data']['url']
+                    return MusicInfo(songId, song, singer, album, 0, audio_url, pic, MusicSource.URL.value)
     except Exception as ex:
         pass
