@@ -82,7 +82,6 @@ class OptionsFlowHandler(OptionsFlow):
                     "multiple": True
                 }
             }),
-            vol.Optional(CONF_URL, default=user_input.get(CONF_URL)): str
+            vol.Optional(CONF_URL, default=options.get(CONF_URL)): str
         })
         return self.async_show_form(step_id="user", data_schema=DATA_SCHEMA, errors=errors)
-        

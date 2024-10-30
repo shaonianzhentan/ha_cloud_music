@@ -17,7 +17,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     data = entry.data
     api_url = data.get(CONF_URL)
-    vip_url = entry.options.get(CONF_URL)
+    vip_url = entry.options.get(CONF_URL, '')
     hass.data['cloud_music'] = CloudMusic(hass, api_url, vip_url)
 
     hass.http.register_view(HttpView)
