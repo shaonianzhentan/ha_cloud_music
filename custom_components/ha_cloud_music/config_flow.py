@@ -76,12 +76,13 @@ class OptionsFlowHandler(OptionsFlow):
                 media_entities.append({ 'label': value, 'value': entity_id })
 
         DATA_SCHEMA = vol.Schema({
-            vol.Required('media_player', default=options.get('media_player')): selector({
+            vol.Optional('media_player', default=options.get('media_player')): selector({
                 "select": {
                     "options": media_entities,
                     "multiple": True
                 }
-            })            
+            }),
+            vol.Optional(CONF_URL, default=user_input.get(CONF_URL)): str
         })
         return self.async_show_form(step_id="user", data_schema=DATA_SCHEMA, errors=errors)
         

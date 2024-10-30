@@ -15,8 +15,6 @@ from .browse_media import (
     async_media_next_track
 )
 
-from .music_parser import get_music
-
 def md5(data):
     return hashlib.md5(data.encode('utf-8')).hexdigest()
 
@@ -24,9 +22,10 @@ _LOGGER = logging.getLogger(__name__)
 
 class CloudMusic():
 
-    def __init__(self, hass, url) -> None:
+    def __init__(self, hass, url, vip_url) -> None:
         self.hass = hass
         self.api_url = url.strip('/')
+        self.vip_url = vip_url.strip('/')
 
         # 媒体资源
         self.async_browse_media = async_browse_media
@@ -491,7 +490,14 @@ class CloudMusic():
     async def async_music_source(self, song, singer=''):
         keyword = f'{singer} {song}'.strip()
         _LOGGER.debug(keyword)
-
-        result = await self.hass.async_add_executor_job(get_music, keyword)
-        if result is not None:
-            return result
+        try:
+            res = await http_get(f'{self.vip_url}?k={keyword}')
+            album = res.get('album', '')
+            songId = res['id']
+            song = res['song']
+            singer = res['singer']
+            audio_url = res['url']
+            pic = res['cover']
+            return MusicInfo(songId, song, singer, album, 0, audio_url, pic, MusicSource.URL.value)
+        except Exception as ex:
+            print(ex)
