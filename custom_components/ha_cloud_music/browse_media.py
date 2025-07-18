@@ -11,55 +11,34 @@ from homeassistant.components.media_player import (
     BrowseError, BrowseMedia,
     async_process_play_media_url
 )
-from homeassistant.components.media_player.const import (
-    MEDIA_CLASS_ALBUM,
-    MEDIA_CLASS_ARTIST,
-    MEDIA_CLASS_CHANNEL,
-    MEDIA_CLASS_DIRECTORY,
-    MEDIA_CLASS_EPISODE,
-    MEDIA_CLASS_MOVIE,
-    MEDIA_CLASS_MUSIC,
-    MEDIA_CLASS_PLAYLIST,
-    MEDIA_CLASS_SEASON,
-    MEDIA_CLASS_TRACK,
-    MEDIA_CLASS_TV_SHOW,
-    MEDIA_TYPE_ALBUM,
-    MEDIA_TYPE_ARTIST,
-    MEDIA_TYPE_CHANNEL,
-    MEDIA_TYPE_EPISODE,
-    MEDIA_TYPE_MUSIC,
-    MEDIA_TYPE_MOVIE,
-    MEDIA_TYPE_PLAYLIST,
-    MEDIA_TYPE_SEASON,
-    MEDIA_TYPE_TRACK,
-    MEDIA_TYPE_TVSHOW,
-)
+from homeassistant.components.media_player import MediaType
+from homeassistant.components.media_player import MediaClass
 
 PLAYABLE_MEDIA_TYPES = [
-    MEDIA_TYPE_ALBUM,
-    MEDIA_TYPE_ARTIST,
-    MEDIA_TYPE_TRACK,
+    MediaType.ALBUM,
+    MediaType.ARTIST,
+    MediaType.TRACK,
 ]
 
 CONTAINER_TYPES_SPECIFIC_MEDIA_CLASS = {
-    MEDIA_TYPE_ALBUM: MEDIA_CLASS_ALBUM,
-    MEDIA_TYPE_ARTIST: MEDIA_CLASS_ARTIST,
-    MEDIA_TYPE_PLAYLIST: MEDIA_CLASS_PLAYLIST,
-    MEDIA_TYPE_SEASON: MEDIA_CLASS_SEASON,
-    MEDIA_TYPE_TVSHOW: MEDIA_CLASS_TV_SHOW,
+    MediaType.ALBUM: MediaClass.ALBUM,
+    MediaType.ARTIST: MediaClass.ARTIST,
+    MediaType.PLAYLIST: MediaClass.PLAYLIST,
+    MediaType.SEASON: MediaClass.SEASON,
+    MediaType.TVSHOW: MediaClass.TV_SHOW,
 }
 
 CHILD_TYPE_MEDIA_CLASS = {
-    MEDIA_TYPE_SEASON: MEDIA_CLASS_SEASON,
-    MEDIA_TYPE_ALBUM: MEDIA_CLASS_ALBUM,
-    MEDIA_TYPE_MUSIC: MEDIA_CLASS_MUSIC,
-    MEDIA_TYPE_ARTIST: MEDIA_CLASS_ARTIST,
-    MEDIA_TYPE_MOVIE: MEDIA_CLASS_MOVIE,
-    MEDIA_TYPE_PLAYLIST: MEDIA_CLASS_PLAYLIST,
-    MEDIA_TYPE_TRACK: MEDIA_CLASS_TRACK,
-    MEDIA_TYPE_TVSHOW: MEDIA_CLASS_TV_SHOW,
-    MEDIA_TYPE_CHANNEL: MEDIA_CLASS_CHANNEL,
-    MEDIA_TYPE_EPISODE: MEDIA_CLASS_EPISODE,
+    MediaType.SEASON: MediaClass.SEASON,
+    MediaType.ALBUM: MediaClass.ALBUM,
+    MediaType.MUSIC: MediaClass.MUSIC,
+    MediaType.ARTIST: MediaClass.ARTIST,
+    MediaType.MOVIE: MediaClass.MOVIE,
+    MediaType.PLAYLIST: MediaClass.PLAYLIST,
+    MediaType.TRACK: MediaClass.TRACK,
+    MediaType.TVSHOW: MediaClass.TV_SHOW,
+    MediaType.CHANNEL: MediaClass.CHANNEL,
+    MediaType.EPISODE: MediaClass.EPISODE,
 }
 
 _LOGGER = logging.getLogger(__name__)
@@ -138,18 +117,18 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
             {
                 'title': '播放列表',
                 'path': CloudMusicRouter.local_playlist,
-                'type': MEDIA_TYPE_PLAYLIST
+                'type': MediaType.PLAYLIST
             },
             {
                 'title': '媒体库',
                 'path': CloudMusicRouter.media_source,
-                'type': MEDIA_TYPE_PLAYLIST,
+                'type': MediaType.PLAYLIST,
                 'thumbnail': 'https://brands.home-assistant.io/_/media_source/icon.png'
             },
             {
                 'title': '榜单',
                 'path': CloudMusicRouter.toplist,
-                'type': MEDIA_TYPE_ALBUM,
+                'type': MediaType.ALBUM,
                 'thumbnail': 'http://p2.music.126.net/pcYHpMkdC69VVvWiynNklA==/109951166952713766.jpg'
             }
         ]
@@ -159,29 +138,29 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
                 {
                     'title': '每日推荐歌曲',
                     'path': CloudMusicRouter.my_daily,
-                    'type': MEDIA_TYPE_MUSIC
+                    'type': MediaType.MUSIC
                 },{
                     'title': '每日推荐歌单',
                     'path': CloudMusicRouter.my_recommend_resource,
-                    'type': MEDIA_TYPE_ALBUM
+                    'type': MediaType.ALBUM
                 },{
                     'title': '我的云盘',
                     'path': CloudMusicRouter.my_cloud,
-                    'type': MEDIA_TYPE_ALBUM,
+                    'type': MediaType.ALBUM,
                     'thumbnail': 'http://p3.music.126.net/ik8RFcDiRNSV2wvmTnrcbA==/3435973851857038.jpg'
                 },{
                     'title': '我的歌单',
                     'path': CloudMusicRouter.my_created,
-                    'type': MEDIA_TYPE_ALBUM,
+                    'type': MediaType.ALBUM,
                     'thumbnail': 'https://p2.music.126.net/tGHU62DTszbFQ37W9qPHcg==/2002210674180197.jpg'
                 },{
                     'title': '我的电台',
                     'path': CloudMusicRouter.my_radio,
-                    'type': MEDIA_TYPE_SEASON
+                    'type': MediaType.SEASON
                 },{
                     'title': '我的歌手',
                     'path': CloudMusicRouter.my_artist,
-                    'type': MEDIA_TYPE_ARTIST,
+                    'type': MediaType.ARTIST,
                     #'thumbnail': 'http://p1.music.126.net/9M-U5gX1gccbuBXZ6JnTUg==/109951165264087991.jpg'
                 }
             ])
@@ -193,24 +172,24 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
             {
                 'title': '新闻快讯',
                 'path': CloudMusicRouter.ting_homepage,
-                'type': MEDIA_TYPE_ALBUM,
+                'type': MediaType.ALBUM,
                 'thumbnail': 'https://p1.music.126.net/ilcqG4jS0GJgAlLs9BCz0g==/109951166709733089.jpg'
             },{
                 'title': 'FM电台',
                 'path': CloudMusicRouter.fm_channel,
-                'type': MEDIA_TYPE_CHANNEL
+                'type': MediaType.CHANNEL
             },{
                 'title': '二维码登录',
                 'path': CloudMusicRouter.my_login + '?action=menu',
-                'type': MEDIA_TYPE_CHANNEL,
+                'type': MediaType.CHANNEL,
                 'thumbnail': 'https://p1.music.126.net/kMuXXbwHbduHpLYDmHXrlA==/109951168152833223.jpg'
             }
         ])
 
         library_info = BrowseMedia(
-            media_class=MEDIA_CLASS_DIRECTORY,
+            media_class=MediaClass.DIRECTORY,
             media_content_id=protocol,
-            media_content_type=MEDIA_TYPE_CHANNEL,
+            media_content_type=MediaType.CHANNEL,
             title="云音乐",
             can_play=False,
             can_expand=True,
@@ -252,9 +231,9 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
     if media_content_id.startswith(CloudMusicRouter.local_playlist):
         # 本地播放列表
         library_info = BrowseMedia(
-            media_class=MEDIA_CLASS_DIRECTORY,
+            media_class=MediaClass.DIRECTORY,
             media_content_id=media_content_id,
-            media_content_type=MEDIA_TYPE_PLAYLIST,
+            media_content_type=MediaType.PLAYLIST,
             title=title,
             can_play=False,
             can_expand=False,
@@ -269,8 +248,8 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
             library_info.children.append(
                 BrowseMedia(
                     title=title,
-                    media_class=MEDIA_CLASS_MUSIC,
-                    media_content_type=MEDIA_TYPE_PLAYLIST,
+                    media_class=MediaClass.MUSIC,
+                    media_content_type=MediaType.PLAYLIST,
                     media_content_id=f"{media_content_id}&index={index}",
                     can_play=True,
                     can_expand=False,
@@ -295,17 +274,17 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
                     qr['time'] = now
 
             return BrowseMedia(
-                media_class=MEDIA_CLASS_DIRECTORY,
+                media_class=MediaClass.DIRECTORY,
                 media_content_id=media_content_id,
-                media_content_type=MEDIA_CLASS_TRACK,
+                media_content_type=MediaClass.TRACK,
                 title='APP扫码授权后，点击二维码登录',
                 can_play=False,
                 can_expand=True,
                 children=[
                     BrowseMedia(
                         title='点击检查登录',
-                        media_class=MEDIA_CLASS_DIRECTORY,
-                        media_content_type=MEDIA_TYPE_MUSIC,
+                        media_class=MediaClass.DIRECTORY,
+                        media_content_type=MediaType.MUSIC,
                         media_content_id=CloudMusicRouter.my_login + '?action=login&id=' + qr['key'],
                         can_play=False,
                         can_expand=True,
@@ -324,9 +303,9 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
                 title = f'{message}，点击返回重试'
 
             return BrowseMedia(
-                media_class=MEDIA_CLASS_DIRECTORY,
+                media_class=MediaClass.DIRECTORY,
                 media_content_id=media_content_id,
-                media_content_type=MEDIA_TYPE_PLAYLIST,
+                media_content_type=MediaType.PLAYLIST,
                 title=title,
                 can_play=False,
                 can_expand=False,
@@ -335,9 +314,9 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
     if media_content_id.startswith(CloudMusicRouter.my_daily):
         # 每日推荐
         library_info = BrowseMedia(
-            media_class=MEDIA_CLASS_DIRECTORY,
+            media_class=MediaClass.DIRECTORY,
             media_content_id=media_content_id,
-            media_content_type=MEDIA_TYPE_PLAYLIST,
+            media_content_type=MediaType.PLAYLIST,
             title=title,
             can_play=True,
             can_expand=False,
@@ -348,8 +327,8 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
             library_info.children.append(
                 BrowseMedia(
                     title=music_info.song,
-                    media_class=MEDIA_CLASS_MUSIC,
-                    media_content_type=MEDIA_TYPE_PLAYLIST,
+                    media_class=MediaClass.MUSIC,
+                    media_content_type=MediaType.PLAYLIST,
                     media_content_id=f"{media_content_id}&index={index}",
                     can_play=True,
                     can_expand=False,
@@ -360,9 +339,9 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
     if media_content_id.startswith(CloudMusicRouter.my_cloud):
         # 我的云盘
         library_info = BrowseMedia(
-            media_class=MEDIA_CLASS_DIRECTORY,
+            media_class=MediaClass.DIRECTORY,
             media_content_id=media_content_id,
-            media_content_type=MEDIA_TYPE_PLAYLIST,
+            media_content_type=MediaType.PLAYLIST,
             title=title,
             can_play=True,
             can_expand=False,
@@ -373,8 +352,8 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
             library_info.children.append(
                 BrowseMedia(
                     title=music_info.song,
-                    media_class=MEDIA_CLASS_MUSIC,
-                    media_content_type=MEDIA_TYPE_PLAYLIST,
+                    media_class=MediaClass.MUSIC,
+                    media_content_type=MediaType.PLAYLIST,
                     media_content_id=f"{media_content_id}&index={index}",
                     can_play=True,
                     can_expand=False,
@@ -385,9 +364,9 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
     if media_content_id.startswith(CloudMusicRouter.my_created):
         # 我创建的歌单
         library_info = BrowseMedia(
-            media_class=MEDIA_CLASS_DIRECTORY,
+            media_class=MediaClass.DIRECTORY,
             media_content_id=media_content_id,
-            media_content_type=MEDIA_TYPE_PLAYLIST,
+            media_content_type=MediaType.PLAYLIST,
             title=title,
             can_play=False,
             can_expand=False,
@@ -399,8 +378,8 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
             library_info.children.append(
                 BrowseMedia(
                     title=item.get('name'),
-                    media_class=MEDIA_CLASS_DIRECTORY,
-                    media_content_type=MEDIA_TYPE_MUSIC,
+                    media_class=MediaClass.DIRECTORY,
+                    media_content_type=MediaType.MUSIC,
                     media_content_id=f"{CloudMusicRouter.playlist}?title={quote(item['name'])}&id={item['id']}",
                     can_play=False,
                     can_expand=True,
@@ -411,9 +390,9 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
     if media_content_id.startswith(CloudMusicRouter.my_radio):
         # 收藏的电台
         library_info = BrowseMedia(
-            media_class=MEDIA_CLASS_DIRECTORY,
+            media_class=MediaClass.DIRECTORY,
             media_content_id=media_content_id,
-            media_content_type=MEDIA_TYPE_PLAYLIST,
+            media_content_type=MediaType.PLAYLIST,
             title=title,
             can_play=False,
             can_expand=False,
@@ -424,8 +403,8 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
             library_info.children.append(
                 BrowseMedia(
                     title=item.get('name'),
-                    media_class=MEDIA_CLASS_DIRECTORY,
-                    media_content_type=MEDIA_TYPE_PLAYLIST,
+                    media_class=MediaClass.DIRECTORY,
+                    media_content_type=MediaType.PLAYLIST,
                     media_content_id=f"{CloudMusicRouter.radio_playlist}?title={quote(item['name'])}&id={item['id']}",
                     can_play=False,
                     can_expand=True,
@@ -436,9 +415,9 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
     if media_content_id.startswith(CloudMusicRouter.radio_playlist):
         # 电台音乐列表
         library_info = BrowseMedia(
-            media_class=MEDIA_CLASS_DIRECTORY,
+            media_class=MediaClass.DIRECTORY,
             media_content_id=media_content_id,
-            media_content_type=MEDIA_TYPE_PLAYLIST,
+            media_content_type=MediaType.PLAYLIST,
             title=title,
             can_play=True,
             can_expand=False,
@@ -449,8 +428,8 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
             library_info.children.append(
                 BrowseMedia(
                     title=music_info.song,
-                    media_class=MEDIA_CLASS_MUSIC,
-                    media_content_type=MEDIA_TYPE_PLAYLIST,
+                    media_class=MediaClass.MUSIC,
+                    media_content_type=MediaType.PLAYLIST,
                     media_content_id=f"{media_content_id}&index={index}",
                     can_play=True,
                     can_expand=False,
@@ -461,9 +440,9 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
     if media_content_id.startswith(CloudMusicRouter.my_artist):
         # 收藏的歌手
         library_info = BrowseMedia(
-            media_class=MEDIA_CLASS_DIRECTORY,
+            media_class=MediaClass.DIRECTORY,
             media_content_id=media_content_id,
-            media_content_type=MEDIA_TYPE_PLAYLIST,
+            media_content_type=MediaType.PLAYLIST,
             title=title,
             can_play=False,
             can_expand=False,
@@ -474,8 +453,8 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
             library_info.children.append(
                 BrowseMedia(
                     title=item['name'],
-                    media_class=MEDIA_CLASS_ARTIST,
-                    media_content_type=MEDIA_TYPE_PLAYLIST,
+                    media_class=MediaClass.ARTIST,
+                    media_content_type=MediaType.PLAYLIST,
                     media_content_id=f"{cloudmusic_protocol}my/artist/playlist?title={quote(item['name'])}&id={item['id']}",
                     can_play=False,
                     can_expand=True,
@@ -486,9 +465,9 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
     if media_content_id.startswith(CloudMusicRouter.artist_playlist):
         # 歌手音乐列表
         library_info = BrowseMedia(
-            media_class=MEDIA_CLASS_DIRECTORY,
+            media_class=MediaClass.DIRECTORY,
             media_content_id=media_content_id,
-            media_content_type=MEDIA_TYPE_PLAYLIST,
+            media_content_type=MediaType.PLAYLIST,
             title=title,
             can_play=True,
             can_expand=False,
@@ -499,8 +478,8 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
             library_info.children.append(
                 BrowseMedia(
                     title=music_info.song,
-                    media_class=MEDIA_CLASS_MUSIC,
-                    media_content_type=MEDIA_TYPE_PLAYLIST,
+                    media_class=MediaClass.MUSIC,
+                    media_content_type=MediaType.PLAYLIST,
                     media_content_id=f"{media_content_id}&index={index}",
                     can_play=True,
                     can_expand=False,
@@ -511,9 +490,9 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
     if media_content_id.startswith(CloudMusicRouter.my_recommend_resource):
         # 每日推荐歌单
         library_info = BrowseMedia(
-            media_class=MEDIA_CLASS_DIRECTORY,
+            media_class=MediaClass.DIRECTORY,
             media_content_id=media_content_id,
-            media_content_type=MEDIA_CLASS_TRACK,
+            media_content_type=MediaClass.TRACK,
             title=title,
             can_play=False,
             can_expand=True,
@@ -524,8 +503,8 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
             library_info.children.append(
                 BrowseMedia(
                     title=item['name'],
-                    media_class=MEDIA_CLASS_PLAYLIST,
-                    media_content_type=MEDIA_TYPE_PLAYLIST,
+                    media_class=MediaClass.PLAYLIST,
+                    media_content_type=MediaType.PLAYLIST,
                     media_content_id=f"{CloudMusicRouter.playlist}?title={quote(item['name'])}&id={item['id']}",
                     can_play=False,
                     can_expand=True,
@@ -536,9 +515,9 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
     if media_content_id.startswith(CloudMusicRouter.toplist):
         # 排行榜
         library_info = BrowseMedia(
-            media_class=MEDIA_CLASS_DIRECTORY,
+            media_class=MediaClass.DIRECTORY,
             media_content_id=media_content_id,
-            media_content_type=MEDIA_CLASS_TRACK,
+            media_content_type=MediaClass.TRACK,
             title=title,
             can_play=False,
             can_expand=True,
@@ -549,8 +528,8 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
             library_info.children.append(
                 BrowseMedia(
                     title=item['name'],
-                    media_class=MEDIA_CLASS_PLAYLIST,
-                    media_content_type=MEDIA_TYPE_PLAYLIST,
+                    media_class=MediaClass.PLAYLIST,
+                    media_content_type=MediaType.PLAYLIST,
                     media_content_id=f"{CloudMusicRouter.playlist}?title={quote(item['name'])}&id={item['id']}",
                     can_play=False,
                     can_expand=True,
@@ -561,9 +540,9 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
     if media_content_id.startswith(CloudMusicRouter.playlist):
         # 歌单列表
         library_info = BrowseMedia(
-            media_class=MEDIA_CLASS_PLAYLIST,
+            media_class=MediaClass.PLAYLIST,
             media_content_id=media_content_id,
-            media_content_type=MEDIA_TYPE_PLAYLIST,
+            media_content_type=MediaType.PLAYLIST,
             title=title,
             can_play=True,
             can_expand=False,
@@ -574,8 +553,8 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
             library_info.children.append(
                 BrowseMedia(
                     title=f'{music_info.song} - {music_info.singer}',
-                    media_class=MEDIA_CLASS_MUSIC,
-                    media_content_type=MEDIA_TYPE_PLAYLIST,
+                    media_class=MediaClass.MUSIC,
+                    media_content_type=MediaType.PLAYLIST,
                     media_content_id=f"{media_content_id}&index={index}",
                     can_play=True,
                     can_expand=False,
@@ -645,9 +624,9 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
             }
         ]
         library_info = BrowseMedia(
-            media_class=MEDIA_CLASS_DIRECTORY,
+            media_class=MediaClass.DIRECTORY,
             media_content_id=media_content_id,
-            media_content_type=MEDIA_TYPE_CHANNEL,
+            media_content_type=MediaType.CHANNEL,
             title=title,
             can_play=False,
             can_expand=False,
@@ -658,8 +637,8 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
             library_info.children.append(
                 BrowseMedia(
                     title=title,
-                    media_class=CHILD_TYPE_MEDIA_CLASS[MEDIA_TYPE_EPISODE],
-                    media_content_type=MEDIA_TYPE_EPISODE,
+                    media_class=CHILD_TYPE_MEDIA_CLASS[MediaType.EPISODE],
+                    media_content_type=MediaType.EPISODE,
                     media_content_id=f'{CloudMusicRouter.ting_playlist}?title={quote(title)}&id=' + item['id'],
                     can_play=True,
                     can_expand=False
@@ -671,9 +650,9 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
     if media_content_id.startswith(CloudMusicRouter.fm_channel):
 
         library_info = BrowseMedia(
-            media_class=MEDIA_CLASS_DIRECTORY,
+            media_class=MediaClass.DIRECTORY,
             media_content_id=media_content_id,
-            media_content_type=MEDIA_TYPE_CHANNEL,
+            media_content_type=MediaType.CHANNEL,
             title=title,
             can_play=False,
             can_expand=False,
@@ -687,8 +666,8 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
             library_info.children.append(
                 BrowseMedia(
                     title=title,
-                    media_class=CHILD_TYPE_MEDIA_CLASS[MEDIA_TYPE_CHANNEL],
-                    media_content_type=MEDIA_TYPE_CHANNEL,
+                    media_class=CHILD_TYPE_MEDIA_CLASS[MediaType.CHANNEL],
+                    media_content_type=MediaType.CHANNEL,
                     media_content_id=f'{CloudMusicRouter.fm_playlist}?title={quote(title)}&id={item["id"]}',
                     can_play=False,
                     can_expand=True
@@ -699,9 +678,9 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
     if media_content_id.startswith(CloudMusicRouter.fm_playlist):
         
         library_info = BrowseMedia(
-            media_class=MEDIA_CLASS_DIRECTORY,
+            media_class=MediaClass.DIRECTORY,
             media_content_id=media_content_id,
-            media_content_type=MEDIA_TYPE_PLAYLIST,
+            media_content_type=MediaType.PLAYLIST,
             title=title,
             can_play=True,
             can_expand=False,
@@ -712,8 +691,8 @@ async def async_browse_media(media_player, media_content_type, media_content_id)
             library_info.children.append(
                 BrowseMedia(
                     title=f'{music_info.song} - {music_info.singer}',
-                    media_class=MEDIA_CLASS_MUSIC,
-                    media_content_type=MEDIA_TYPE_PLAYLIST,
+                    media_class=MediaClass.MUSIC,
+                    media_content_type=MediaType.PLAYLIST,
                     media_content_id=f"{media_content_id}&index={index}",
                     can_play=True,
                     can_expand=False,
@@ -821,7 +800,7 @@ async def async_media_previous_track(media_player, shuffle=False):
         if playindex < 0:
             playindex = count - 1
     media_player.playindex = playindex
-    await media_player.async_play_media(MEDIA_TYPE_MUSIC, playlist[playindex].url)
+    await media_player.async_play_media(MediaType.MUSIC, playlist[playindex].url)
 
 # 下一曲
 async def async_media_next_track(media_player, shuffle=False):
@@ -838,4 +817,4 @@ async def async_media_next_track(media_player, shuffle=False):
         if playindex >= len(playlist):
             playindex = 0
     media_player.playindex = playindex
-    await media_player.async_play_media(MEDIA_TYPE_MUSIC, playlist[playindex].url)
+    await media_player.async_play_media(MediaType.MUSIC, playlist[playindex].url)
