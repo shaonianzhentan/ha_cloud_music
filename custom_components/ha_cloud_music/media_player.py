@@ -90,6 +90,8 @@ class CloudMusicMediaPlayer(MediaPlayerEntity):
             self._attr_media_position_updated_at = datetime.datetime.now()
             # 判断是否下一曲
             if self.before_state is not None:
+                media_duration = int(self.before_state['media_duration'])
+                self.before_state['media_duration'] = media_duration
                 # 判断音乐总时长
                 if self.before_state['media_duration'] > 0 and self.before_state['media_duration'] - self.before_state['media_duration'] <= 5:
                     # 判断源音乐播放器状态

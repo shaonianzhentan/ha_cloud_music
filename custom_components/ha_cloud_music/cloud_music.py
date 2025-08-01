@@ -158,8 +158,18 @@ class CloudMusic():
                 return url
 
     # 获取歌单列表
-    async def async_get_playlist(self, playlist_id):
-        res = await self.netease_cloud_music(f'/playlist/track/all?id={playlist_id}&limit=1000')
+        limit = 1000
+        offset = 0
+        songs = []
+
+        while True:
+            res = await self.netease_cloud_music(f'/playlist/track/all?id={playlist_id}&limit={limit}&offset={offset}')
+            song = res.get('songs', [])
+            songs.extend(song)
+
+            if len(song) < limit:
+                break  # 如果返回的歌曲数少于limit，则说明已经获取完所有歌曲
+            offset += limit
 
         def format_playlist(item):
             id = item['id']
@@ -172,7 +182,7 @@ class CloudMusic():
             music_info = MusicInfo(id, song, singer, album, duration, url, picUrl, MusicSource.PLAYLIST.value)
             return music_info
 
-        return list(map(format_playlist, res['songs']))
+        return list(map(format_playlist, songs))
 
     # 获取电台列表
     async def async_get_djradio(self, rid):
