@@ -119,7 +119,6 @@ class CloudMusic():
         base_url = get_url(self.hass, prefer_external=True)
         if singer is None:
             singer = ''
-
         encoded_data = base64.b64encode(f'id={id}&song={quote(song)}&singer={quote(singer)}&source={source}'.encode('utf-8'))
         url_encoded_data = quote(encoded_data.decode('utf-8'), safe='-_')
         return f'{base_url}/cloud_music/url?data={url_encoded_data}'
