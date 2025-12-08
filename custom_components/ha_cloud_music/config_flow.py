@@ -48,12 +48,9 @@ class SimpleConfigFlow(ConfigFlow, domain=DOMAIN):
     @staticmethod
     @callback
     def async_get_options_flow(entry: ConfigEntry):
-        return OptionsFlowHandler(entry)
+        return OptionsFlowHandler()
 
 class OptionsFlowHandler(OptionsFlow):
-    def __init__(self, config_entry: ConfigEntry):
-        self.config_entry = config_entry
-
     async def async_step_init(self, user_input=None):
         return await self.async_step_user(user_input)
 
@@ -81,7 +78,6 @@ class OptionsFlowHandler(OptionsFlow):
                     "options": media_entities,
                     "multiple": True
                 }
-            }),
-            vol.Optional(CONF_URL, default=options.get(CONF_URL)): str
+            })
         })
         return self.async_show_form(step_id="user", data_schema=DATA_SCHEMA, errors=errors)
